@@ -24,20 +24,33 @@ def hello():
 
 
 #Patrick
+
+# Parameters
+# max_token
+# temperature
+# role
+# context
+# task
+
 # 配置 LangChain 的模板和 LLMChain
-template = """Question: {question}
-Let's think step by step.
-Answer: """
-prompt = PromptTemplate(template=template, input_variables=["question"])
-llm = ChatOpenAI(model_name="gpt-4o-mini")
+template = """
+Role: You are a professional restaurant scheduling manager.
+Context: We are a sushi restaurant located in Melbourne. The restaurant is open daily from 10 am to 8 pm.
+Output Format: Please present the schedule as an excel-like table with columns such as Day, Employee Name, Start Time, End Time.
+task: {task}
+max_token: 300
+Answer:
+"""
+prompt = PromptTemplate(template=template, input_variables=["task"])
+llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0)
 llm_chain = LLMChain(prompt=prompt, llm=llm)
 
 @app.route("/ask", methods=["GET", "POST"])
 def ask():
     # 固定问题：2018年举行奥运会的城市有多少人（英文）
-    question = "What is the population of the city that hosted the Olympics in 2020?"
-    answer = llm_chain.run(question)
-    return jsonify({"question": question, "answer": answer})
+    task= "Help me to create a scheduling table for my employees for the coming week."
+    answer = llm_chain.run(task)
+    return jsonify({"task": task, "answer": answer})
 
 
 
