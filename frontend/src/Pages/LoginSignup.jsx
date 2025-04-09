@@ -12,7 +12,7 @@ const LoginSignup = () => {
 
   const login = async () => {
     let dataObj;
-    await fetch('http://localhost:5000/login', {
+    await fetch('http://localhost:5001/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -34,7 +34,7 @@ const LoginSignup = () => {
 
   const signup = async () => {
     let dataObj;
-    await fetch('http://localhost:5000/signup', {
+    await fetch('http://localhost:5001/signup', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -4,13 +4,15 @@ from flask import Flask, request, jsonify
 # from langchain.chat_models import ChatOpenAI
 # from langchain import PromptTemplate, LLMChain
 from dotenv import load_dotenv
-# import jwt
+import jwt
 from pymongo import MongoClient
 from flask_cors import CORS
+from flask_cors import cross_origin
 
 app = Flask(__name__)
 
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}}, supports_credentials=True)
+
 
 
 app.config['SECRET_KEY'] = 'this_is_my_secret_key'
@@ -41,8 +43,13 @@ users_collection = db['users']
 
 
 # user signup route
+
 @app.route("/signup", methods=["POST", "OPTIONS"])
+@cross_origin(origin='http://localhost:3000', supports_credentials=True)
 def signup():
+    if request.method == 'OPTIONS':
+        return '', 200  # 必须返回一个空 200 响应
+    
     data = request.get_json()
     email = data.get("email")
     existing_user = users_collection.find_one({"email": email})
@@ -62,7 +69,11 @@ def signup():
 
 #user login route
 @app.route("/login", methods=["POST", "OPTIONS"])
+@cross_origin(origin='http://localhost:3000', supports_credentials=True)
 def login():
+    if request.method == 'OPTIONS':
+        return '', 200  # 必须返回一个空 200 响应
+    
     data = request.get_json()
     email = data.get("email")
     password = data.get("password")
@@ -116,4 +127,4 @@ def get_data():
     return jsonify(data)
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=5001)
