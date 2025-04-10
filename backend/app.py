@@ -9,8 +9,9 @@ from dotenv import load_dotenv
 from pymongo import MongoClient
 import jwt
 
-from langchain.chat_models import ChatOpenAI
-from langchain import PromptTemplate, LLMChain
+from langchain_openai import ChatOpenAI
+from langchain_core.prompts import PromptTemplate
+from langchain.chains import LLMChain
 
 app = Flask(__name__)
 CORS(app)  # Allow Cross-Origin Requests
@@ -156,7 +157,7 @@ Answer:
 """
 prompt = PromptTemplate(template=template, input_variables=["task"])
 llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0)
-llm_chain = LLMChain(prompt=prompt, llm=llm)
+chain = prompt | llm
 
 
 @app.route("/ask", methods=["GET", "POST"])
