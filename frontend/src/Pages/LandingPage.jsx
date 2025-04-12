@@ -4,7 +4,8 @@ import { Hero } from '../Component/Hero/Hero'
 
 export const LandingPage = () => {
   return (
-      <div>
+    <div>
+      <div className="glow-background" />
       <Hero />
     </div>
   )

@@ -1,3 +1,17 @@
+.glow-background {
+  position: absolute;
+  width: 600px;
+  height: 300px;
+  top: -152px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #E0C3FC, #8EC5FC);
+  filter: blur(200px);
+  opacity: 0.8;
+  z-index: -1;
+  border-radius: 50%;
+}
+
 .App {
   text-align: center;
 }

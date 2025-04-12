@@ -11,6 +11,7 @@ import { Footer } from './Component/Footer/Footer.jsx'
 function App() {
   return (
     <div>
+      <div className="glow-background" />
       <BrowserRouter>
         <Navbar></Navbar>
         <Routes>
