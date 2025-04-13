@@ -7,10 +7,6 @@ import whatsapp_icon from '../Assets/whatsapp_icon.png'
 export const Footer = () => {
     return (
         <div className='footer'>
-          <div className="footer-logo">
-            <img src={footer_logo} alt="" />
-            <p>Scheduler</p>
-          </div>
           <ul className="footer-links">
             <li>Company</li>
             <li>Products</li>

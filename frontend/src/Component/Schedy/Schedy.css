@@ -1,0 +1,84 @@
+.schedy {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 200px;
+    box-sizing: border-box;
+}
+
+.bg-image {
+  position: absolute;
+  z-index: -1;
+}
+
+.frame8 {
+  top: 15%;
+  right: 20%;
+  transform: rotate(15deg);
+}
+.frame10 {
+  top: 50%;
+  right: 25%;
+  transform: rotate(15deg);
+}
+.frame23 {
+  bottom: 5%;
+  right: 15%;
+  transform: rotate(15deg);
+}
+.frame24 {
+  top: 15%;
+  left: 15%;
+  transform: rotate(15deg);
+}
+.frame25 {
+  top: 50%;
+  left: 25%;
+  transform: rotate(15deg);
+}
+.frame26 {
+  top: 75%;
+  left: 15%;
+  transform: rotate(15deg);
+}
+
+
+.schedy h2{
+    font-family: Montserrat;
+    font-weight: 500;
+    font-size: 48px;
+    line-height: 24px;
+    letter-spacing: 0px;
+    vertical-align: middle;
+    margin-bottom: 80px;
+
+}
+.schedy p{
+    font-family: 'Montserrat';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 24px;
+    margin-bottom: 80px;
+}
+
+.schedy-latest-btn{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    width: 250px;
+    height: 60px;
+    border-radius: 75px;
+    margin-top: 20px;
+    background: black;
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+}
+.schedy-latest-btn img{
+    width: 18px;
+}
