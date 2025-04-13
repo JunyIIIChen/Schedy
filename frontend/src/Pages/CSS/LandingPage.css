@@ -1,0 +1,13 @@
+.glow-background {
+    position: absolute;
+    width: 600px;
+    height: 300px;
+    top: -100px;
+    left: 30%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #E0C3FC, #8EC5FC);
+    filter: blur(200px);
+    opacity: 0.6;
+    z-index: 0;
+    border-radius: 50%;
+  }
