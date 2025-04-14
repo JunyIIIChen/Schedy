@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import "./CSS/LoginSignup.css";
+import signin1 from "../Component/Assets/signin1.png";
+import signin2 from "../Component/Assets/signin2.png";
 
 const LoginSignup = () => {
 
@@ -74,6 +76,11 @@ const LoginSignup = () => {
           <input type="checkbox" name="" id="" />
           <p>By continuing, i agree to the terms of use & privacy policy.</p>
         </div>
+      </div>
+      <div className="loginsignup-right">
+        <img className="signin-image frame8" src={signin1} alt=""/>
+        {/*<img className="frame8" src={signin2} alt=""/>*/}
+
       </div>
     </div>
   );
