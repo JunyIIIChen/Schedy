@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./CSS/LoginSignup.css";
 import signin1 from "../Component/Assets/signin1.png";
-import signin2 from "../Component/Assets/signin2.png";
+// import signin2 from "../Component/Assets/signin2.png";
 
 const LoginSignup = () => {
 
