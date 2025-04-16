@@ -12,9 +12,10 @@ import jwt
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import PromptTemplate
 from langchain.chains import LLMChain
+import uuid
 
 app = Flask(__name__)
-CORS(app)  # Allow Cross-Origin Requests
+CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}}, supports_credentials=True)
 
 # Set a salt key for JWT encoding/decoding
 app.config['SECRET_KEY'] = 'this_is_my_secret_key'
@@ -30,6 +31,8 @@ client = MongoClient(
 )
 db = client['scheduler']
 users_collection = db['users']
+schedules_collection = db['schedules']
+availabilities_collection = db['availabilities']
 
 
 def extract_all_json(text: str):
@@ -145,6 +148,109 @@ def login():
         return jsonify({"success": False, "error": "User does not exist with this email."})
 
 
+
+
+# auth to generate link
+ALGORITHM = "HS256"
+SECRET_KEY = app.config['SECRET_KEY']
+
+def get_current_user():
+    """
+    Get the current user from the JWT token in the request headers.
+    {
+      "user_id": "...",
+      "manager_id": "...",
+      "company_id": "..."
+    }
+    """
+    auth_header = request.headers.get("Authorization", None)
+
+    if not auth_header:
+        return None
+
+    # 分割 Bearer token
+    parts = auth_header.split()
+
+    if len(parts) != 2 or parts[0].lower() != "bearer":
+        return None
+
+    token = parts[1]
+
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        # payload 是你登录时 encode 的内容，比如 {"user_id": ..., "email": ...}
+        print("Decoded JWT payload:", payload)
+        return payload
+    except jwt.ExpiredSignatureError:
+        print("JWT has expired")
+        return None
+    except jwt.InvalidTokenError:
+        print("JWT is invalid")
+        return None
+
+
+@app.route("/api/schedule", methods=["POST"])
+def create_schedule():
+    """
+    Create a new schedule.
+    """
+    current_user = get_current_user()  # 从JWT/Session解析
+    if not current_user:
+        return jsonify({"error": "Unauthorized"}), 401
+
+    users_id = current_user["user"]["id"]
+    print("Current User ID:", users_id)
+    schedule_id = str(uuid.uuid4())
+
+    # 插入MongoDB
+    doc = {
+        "schedule_id": schedule_id,
+        "users_id": users_id,
+        "created_at": datetime.datetime.now(),
+        "status": "collecting"
+    }
+    schedules_collection.insert_one(doc)
+
+    return jsonify({"schedule_id": schedule_id}), 201
+
+@app.route("/api/availability/<string:schedule_id>", methods=["POST"])
+def submit_availability(schedule_id):
+    """
+    员工提交可用时间（不需要登录）
+    URL 中包含 schedule_id,数据会写入 availabilities_collection
+    """
+    try:
+        data = request.get_json()
+
+        employee_name = data.get("name")
+        employee_email = data.get("email")
+        availability = data.get("availability")
+        preference = data.get("preference")
+
+        # 简单字段校验
+        if not employee_name or not availability:
+            return jsonify({"error": "Missing name or availability"}), 400
+
+        # 构建文档
+        doc = {
+            "schedule_id": schedule_id,
+            "employee_name": employee_name,
+            "employee_email": employee_email,
+            "availability": availability,
+            "preference": preference,
+            "submitted_at": datetime.datetime.now()
+        }
+
+        availabilities_collection.insert_one(doc)
+
+        return jsonify({"message": "Availability submitted successfully"}), 200
+
+    except Exception as e:
+        print("Error submitting availability:", str(e))
+        return jsonify({"error": "Server error"}), 500
+
+
+
 # --- LangChain Setup ---
 template = """
 Role: You are a professional restaurant scheduling manager.
@@ -167,13 +273,15 @@ def ask():
     We fix a 'task' about returning a scheduling table that can be parsed by json.load().
     """
     task = "Return a scheduling table that can be parsed by json.load function with fields: day, employee, start_time, end_time."
-    answer_text = llm_chain.run(task)
+    answer_text = chain.invoke({"task": task})
 
     # Extract JSON (or array of JSON objects) from the AI-generated text
-    parsed_answer = extract_all_json(answer_text)
+    raw_output = answer_text.content if hasattr(answer_text, "content") else str(answer_text)
+    
+    parsed_answer = extract_all_json(raw_output)
 
     print('---------- Raw LLM Output ----------')
-    print(answer_text)
+    print(raw_output)
     print('---------- Extracted JSON Type ----------')
     print(type(parsed_answer))
     print('------------------------------')
