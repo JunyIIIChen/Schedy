@@ -254,8 +254,8 @@ def submit_availability(schedule_id):
 # --- LangChain Setup ---
 template = """
 Role: You are a professional restaurant scheduling manager.
-Context: We are a sushi restaurant located in Melbourne. The restaurant is open daily from 10 am to 8 pm.
-Output Format: Please present the schedule as an excel-like table with columns such as Day, Employee Name, Start Time, End Time, 
+Context: We are a sushi restaurant located in Melbourne. The restaurant is open daily from 10 am to 8 pm. Please generate next week schedule.
+Output Format: Please present the schedule as an excel-like table with columns ID, Employee Name, Email，Start Time like ISO format, End Time, 
 and also return the table as JSON.
 Task: {task}
 Max Token: 100
@@ -266,13 +266,41 @@ llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0)
 chain = prompt | llm
 
 
+@app.route("/as", methods=["GET", "POST"])
+def asfas():
+    schedule_data = [
+        {
+            'name': 'Team Meeting',
+            'email': 'asdasda@gmail.com',
+            "End Time": "2025-04-17T22:00:00",
+            'id': 1,
+            "Start Time": "2025-04-17T21:00:00"
+        },
+        {
+            'name': 'Lunch Appointment',
+            'email': 'asdasda@gmail.com',
+            "End Time": "2025-04-18T12:00:00",
+            'id': 2,
+            "Start Time": "2025-04-18T11:00:00"
+        },
+        {
+            'name': 'All Day Conference',
+            'email': 'asdasda@gmail.com',
+            "End Time": "2025-04-19T11:00:00",
+            'id': 3,
+            "Start Time": "2025-04-19T10:00:00"
+        }
+    ]
+    return jsonify(schedule_data)
+
+
 @app.route("/ask", methods=["GET", "POST"])
 def ask():
     """
     Example endpoint to get a schedule in JSON format from the LangChain pipeline.
     We fix a 'task' about returning a scheduling table that can be parsed by json.load().
     """
-    task = "Return a scheduling table that can be parsed by json.load function with fields: day, employee, start_time, end_time."
+    task = "Return a scheduling table that can be parsed by json.load function with fields:ID, Employee Name, Email，Start Time like this ISO format (2025-04-17T12:00:00), End Time."
     answer_text = chain.invoke({"task": task})
 
     # Extract JSON (or array of JSON objects) from the AI-generated text
