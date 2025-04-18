@@ -13,7 +13,7 @@
 .inputform{
   /*display: flex;*/
   margin-top: 30px;
-  border: 1px solid #7E5CFF;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   border-radius: 20px;
 }
 
