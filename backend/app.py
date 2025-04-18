@@ -2,17 +2,18 @@ import os
 import datetime
 import json
 import re
-
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from dotenv import load_dotenv
 from pymongo import MongoClient
 import jwt
+import uuid
 
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import PromptTemplate
 from langchain.chains import LLMChain
-import uuid
+from langchain.tools import tool
+from langchain import hub
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}}, supports_credentials=True)
@@ -255,7 +256,7 @@ def submit_availability(schedule_id):
 template = """
 Role: You are a professional restaurant scheduling manager.
 Context: We are a sushi restaurant located in Melbourne. The restaurant is open daily from 10 am to 8 pm. Please generate next week schedule.
-Output Format: Please present the schedule as an excel-like table with columns ID, Employee Name, Email，Start Time like ISO format, End Time, 
+Output Format: Please present the schedule as an excel-like table with columns ID, Employee Name, Email,Start Time like ISO format, End Time, 
 and also return the table as JSON.
 Task: {task}
 Max Token: 100
@@ -315,6 +316,69 @@ def ask():
     print('------------------------------')
 
     return jsonify({"task": task, "answer": parsed_answer})
+
+
+
+
+custom_context = """
+Role: You are a professional restaurant scheduling manager.
+Context: We are a sushi restaurant located in Melbourne. The restaurant is open daily from 10 am to 8 pm.
+Please generate the schedule for next week.
+
+Output Format: Please present the schedule as an excel-like table with columns:
+- ID
+- Employee Name
+- Email
+- Start Time (ISO format)
+- End Time (ISO format)
+
+Also return the schedule as valid JSON that can be parsed by json.loads().
+"""
+react_prompt = hub.pull("hwchase17/react")
+
+# Inject your context above the classic ReAct prompt
+react_prompt.template = f"{custom_context.strip()}\n\n{react_prompt.template}"
+
+print("Prompt Template:", react_prompt.template)
+
+tools = [
+    # Add your tools here
+    #自动查数据 做排班
+    #自动下发排班通知
+]
+
+# agent model
+@app.route("/api/agent", methods=["POST"])
+def agent():
+    """
+    Example endpoint to get a schedule in JSON format from the LangChain pipeline.
+    We fix a 'task' about returning a scheduling table that can be parsed by json.load().
+    """
+    task = "Return a scheduling table that can be parsed by json.load function with fields:ID, Employee Name, Email,Start Time like this ISO format (2025-04-17T12:00:00), End Time."
+    
+    llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0)
+
+    agent = initialize_agent(
+        tools=tools,
+        llm=llm,
+        agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
+        prompt=react_prompt,
+        verbose=True
+    )
+
+    agent.invoke({
+    "input": task,
+    "chat_history": [],  # 可选
+    "tool_input": {}     # 可选，除非你要控制 tool input
+    })
+
+
+
+
+
+
+
+
 
 
 @app.route('/api/data', methods=['GET'])
