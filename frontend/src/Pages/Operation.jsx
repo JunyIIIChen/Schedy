@@ -1,17 +1,63 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {NavLink} from "react-router-dom";
 import "./CSS/Operation.css";
 
 export const Operation = () => {
-    const [rows, setRows] = useState([
-        {day: 'Monday', startTime: '09:00', endTime: '17:00', workers: 1, dayOff: false},
-        {day: 'Tuesday', startTime: '09:00', endTime: '17:00', workers: 1, dayOff: false},
-        {day: 'Wednesday', startTime: '09:00', endTime: '17:00', workers: 1, dayOff: false},
-        {day: 'Thursday', startTime: '09:00', endTime: '17:00', workers: 1, dayOff: false},
-        {day: 'Friday', startTime: '09:00', endTime: '17:00', workers: 1, dayOff: false},
-        {day: 'Saturday', startTime: '09:00', endTime: '17:00', workers: 1, dayOff: false},
-        {day: 'Sunday', startTime: '09:00', endTime: '17:00', workers: 1, dayOff: false}
-    ]);
+    const [error, setError] = useState('');
+    const [userData, setUserData] = useState(null);
+    const [rows, setRows] = useState([]);
+
+    useEffect(() => {
+        const load_user_information = async () => {
+            const token = localStorage.getItem("auth-token");
+
+            if (!token) {
+                setError("No token found. Please login first.");
+                return;
+            }
+
+            try {
+                const res = await fetch("http://localhost:5001/api/basic", {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                if (!res.ok) {
+                    throw new Error(`HTTP error! status: ${res.status}`);
+                }
+
+                const data = await res.json();
+                // console.log("User data:", data);
+                setUserData(data);
+                setRows(
+                    data.rows?.length > 0
+                        ? data.rows
+                        : [
+                            {day: 'Monday', startTime: '09:00', endTime: '17:00', workers: 1, dayOff: false},
+                            {day: 'Tuesday', startTime: '09:00', endTime: '17:00', workers: 1, dayOff: false},
+                            {day: 'Wednesday', startTime: '09:00', endTime: '17:00', workers: 1, dayOff: false},
+                            {day: 'Thursday', startTime: '09:00', endTime: '17:00', workers: 1, dayOff: false},
+                            {day: 'Friday', startTime: '09:00', endTime: '17:00', workers: 1, dayOff: false},
+                            {day: 'Saturday', startTime: '09:00', endTime: '17:00', workers: 1, dayOff: false},
+                            {day: 'Sunday', startTime: '09:00', endTime: '17:00', workers: 1, dayOff: false}
+                        ]
+                )
+
+
+            } catch (err) {
+                setError("Something went wrong");
+                console.error("Fetch error:", err);
+            }
+        };
+
+        load_user_information();
+
+    }, []);
+
+
 
     // Generate time options (every 30 minutes)
     const generateTimeOptions = () => {
@@ -47,7 +93,40 @@ export const Operation = () => {
         }
     };
 
-    const saveToSQL = (index) => {
+    const saveToSQL = async (index) => {
+        userData.rows = rows;
+        console.log(userData)
+
+        try {
+            const token = localStorage.getItem("auth-token");
+            if (!token) {
+                setError("No token found. Please login first.");
+                return;
+            }
+
+            const response = await fetch("http://localhost:5001/api/update_user", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    updates: userData, // Send the entire userData or specific fields
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            console.log("Update successful:", result);
+            alert("Data saved successfully!");
+
+        } catch (err) {
+            console.error("Failed to save data:", err);
+            setError("Failed to save data. Please try again.");
+        }
 
     };
 
