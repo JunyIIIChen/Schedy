@@ -7,6 +7,7 @@ import { Footer } from './Component/Footer/Footer.jsx'
 import Availability from './Pages/Availability.jsx'
 import Calendar from './Pages/Calendar'
 import Settings from './Pages/Settings'
+import Operation from './Pages/Operation'
 import { LandingPage } from './Pages/LandingPage.jsx';
 import { HomePage } from './Pages/HomePage.jsx';
 
@@ -23,7 +24,8 @@ function App() {
           <Route path='homepage' element={<HomePage></HomePage>}></Route>
           <Route path='/availability' element={<Availability></Availability>} />
           <Route path='/calendar' element={<Calendar></Calendar>} />
-          {/* <Route path='/settings' element={<Settings> </Settings>} /> */}
+          <Route path='/settings' element={<Settings> </Settings>} />
+          <Route path='/operation' element={<Operation> </Operation>} />
         </Routes>
         <Footer/>
       </BrowserRouter>

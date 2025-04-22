@@ -8,6 +8,9 @@ from dotenv import load_dotenv
 from pymongo import MongoClient
 import jwt
 import uuid
+from bson.objectid import ObjectId
+from bson import json_util
+import json
 
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import PromptTemplate
@@ -186,14 +189,70 @@ def get_current_user():
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         # payload 是你登录时 encode 的内容，比如 {"user_id": ..., "email": ...}
-        print("Decoded JWT payload:", payload)
+        # print("Decoded JWT payload:", payload)
         return payload
     except jwt.ExpiredSignatureError:
-        print("JWT has expired")
+        # print("JWT has expired")
         return None
     except jwt.InvalidTokenError:
-        print("JWT is invalid")
+        # print("JWT is invalid")
         return None
+
+@app.route("/api/basic", methods=["POST"])
+def basic_information():
+    current_user = get_current_user()
+    # print('---------------------')
+    # print(current_user)
+    if not current_user:
+        return jsonify({"error": "Unauthorized"}), 401
+
+    user = users_collection.find_one({"_id": ObjectId(current_user["user"]["id"])})
+
+
+    # print('---------------------')
+    # print(user)
+    # print(type(user))
+
+    user_json = json.loads(json_util.dumps(user))
+
+    # Remove sensitive data (like password) before sending
+    user_json.pop('password', None)
+    user_json.pop('date', None)
+
+    # print('---------------------')
+    # print(user_json)
+    # print(type(user_json))
+
+    return jsonify(user_json), 200
+
+@app.route("/api/update_user", methods=["POST"])
+def update_user():
+    try:
+        data = request.get_json()
+        print('---------------------')
+
+        user_id = data["updates"]["_id"]["$oid"]
+        updates = data["updates"]
+
+
+        # Check if _id is valid
+        if not ObjectId.is_valid(ObjectId(user_id)):
+            return jsonify({"error": "Invalid ID format"}), 400
+
+        # Remove _id if present to avoid modifying it
+        updates.pop("_id", None)
+        result = db.users.update_one(
+            {"_id": ObjectId(user_id)},
+            {"$set": updates}
+        )
+
+        if result.modified_count == 1:
+            return jsonify({"success": True, "message": "User updated"})
+        else:
+            return jsonify({"success": False, "message": "No changes made"}), 200
+
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 400
 
 
 @app.route("/api/schedule", methods=["POST"])
@@ -257,6 +316,7 @@ def submit_availability(schedule_id):
         return jsonify({"error": "Server error"}), 500
 
 
+<<<<<<< HEAD
 @app.route("/as", methods=["GET", "POST"])
 def asfas():
     schedule_data = [
@@ -283,6 +343,50 @@ def asfas():
         }
     ]
     return jsonify(schedule_data)
+=======
+
+# --- LangChain Setup ---
+template = """
+Role: You are a professional restaurant scheduling manager.
+Context: We are a sushi restaurant located in Melbourne. The restaurant is open daily from 10 am to 8 pm. Please generate next week schedule.
+Output Format: Please present the schedule as an excel-like table with columns ID, Employee Name, Email,Start Time like ISO format, End Time, 
+and also return the table as JSON.
+Task: {task}
+Max Token: 100
+Answer:
+"""
+prompt = PromptTemplate(template=template, input_variables=["task"])
+llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0)
+chain = prompt | llm
+
+
+# @app.route("/as", methods=["GET", "POST"])
+# def asfas():
+#     schedule_data = [
+#         {
+#             'name': 'Team Meeting',
+#             'email': 'asdasda@gmail.com',
+#             "End Time": "2025-04-17T22:00:00",
+#             'id': 1,
+#             "Start Time": "2025-04-17T21:00:00"
+#         },
+#         {
+#             'name': 'Lunch Appointment',
+#             'email': 'asdasda@gmail.com',
+#             "End Time": "2025-04-18T12:00:00",
+#             'id': 2,
+#             "Start Time": "2025-04-18T11:00:00"
+#         },
+#         {
+#             'name': 'All Day Conference',
+#             'email': 'asdasda@gmail.com',
+#             "End Time": "2025-04-19T11:00:00",
+#             'id': 3,
+#             "Start Time": "2025-04-19T10:00:00"
+#         }
+#     ]
+#     return jsonify(schedule_data)
+>>>>>>> e4cf18d13ad47aacf25e95f174c198fc91745fff
 
 
 

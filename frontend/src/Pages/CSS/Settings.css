@@ -1,0 +1,99 @@
+.settingsbasic{
+  padding: 50px 200px;
+}
+
+.quicklink {
+  color: #333;
+  font-weight: 600;
+  padding: 8px 12px;
+  text-decoration: none;
+  transition: background-color 0.3s;
+}
+
+.inputform{
+  /*display: flex;*/
+  margin-top: 30px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+}
+
+.inputform-first{
+  display: flex;
+}
+
+
+.inputform-first-left, .inputform-first-right {
+  flex: 1;
+  padding:20px;
+}
+
+.inputform-first-left{
+  text-align: left;
+}
+
+.inputform-first-right{
+  text-align: left;
+}
+
+.inputform-first input {
+  width: 95%;
+  height: 48px;
+  border-radius: 7.49px;
+  /*position: absolute; !* or relative/fixed depending on your layout *!*/
+  margin-top: 32px;
+  /*padding: 10px 15px; !* for better text spacing *!*/
+  font-size: 16px; /* comfortable reading size */
+  border: 1px solid #ccc; /* subtle border */
+  outline: none; /* removes default focus outline */
+  font-family: Arial, sans-serif; /* clean font */
+}
+
+/* Style when input is focused */
+.inputform-first input:focus {
+  padding-left: 20px;
+  border-color: #4a90e2; /* blue highlight */
+  box-shadow: 0 0 5px rgba(74, 144, 226, 0.3); /* subtle glow */
+}
+
+/* Placeholder text styling */
+.inputform-first input::placeholder {
+  color: #999;
+  font-style: italic;
+}
+
+.navbar-settings {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid #ddd;
+}
+
+.nav-links {
+  display: flex;
+  gap: 1rem;
+}
+
+.quicklink {
+  text-decoration: none;
+  color: #333;
+  padding-bottom: 4px;
+  transition: border-bottom 0.3s;
+}
+
+.quicklink.active {
+  border-bottom: 3px solid blue;
+}
+
+.save-btn {
+  padding: 6px 12px;
+  background-color: blue;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.save-btn:hover {
+  background-color: darkblue;
+}
