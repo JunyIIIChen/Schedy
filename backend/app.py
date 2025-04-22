@@ -12,8 +12,14 @@ import uuid
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import PromptTemplate
 from langchain.chains import LLMChain
+from langchain.agents import initialize_agent, AgentType
+from langchain.memory import ConversationBufferMemory
 from langchain.tools import tool
 from langchain import hub
+from langchain.tools import StructuredTool
+from langchain.agents import Tool
+
+
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}}, supports_credentials=True)
@@ -251,22 +257,6 @@ def submit_availability(schedule_id):
         return jsonify({"error": "Server error"}), 500
 
 
-
-# --- LangChain Setup ---
-template = """
-Role: You are a professional restaurant scheduling manager.
-Context: We are a sushi restaurant located in Melbourne. The restaurant is open daily from 10 am to 8 pm. Please generate next week schedule.
-Output Format: Please present the schedule as an excel-like table with columns ID, Employee Name, Email,Start Time like ISO format, End Time, 
-and also return the table as JSON.
-Task: {task}
-Max Token: 100
-Answer:
-"""
-prompt = PromptTemplate(template=template, input_variables=["task"])
-llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0)
-chain = prompt | llm
-
-
 @app.route("/as", methods=["GET", "POST"])
 def asfas():
     schedule_data = [
@@ -295,18 +285,82 @@ def asfas():
     return jsonify(schedule_data)
 
 
+
+
+
+
+
+
+
+
+
+# --- LangChain Setup ---
 @app.route("/ask", methods=["GET", "POST"])
 def ask():
-    """
-    Example endpoint to get a schedule in JSON format from the LangChain pipeline.
-    We fix a 'task' about returning a scheduling table that can be parsed by json.load().
-    """
-    task = "Return a scheduling table that can be parsed by json.load function with fields:ID, Employee Name, Email，Start Time like this ISO format (2025-04-17T12:00:00), End Time."
-    answer_text = chain.invoke({"task": task})
+    data = request.get_json()
+    chat_histories = data.get("chat_history")
 
-    # Extract JSON (or array of JSON objects) from the AI-generated text
-    raw_output = answer_text.content if hasattr(answer_text, "content") else str(answer_text)
+    # Get user
+    # user = users_collection.find_one({"id": id}) 
+
+    # user_business_hour = user.get("business_hour")
     
+
+    # user_name = user.get("name")
+    # user_location = user.get("user_location")
+    # user_industry = user.get("user_industry")
+
+
+    user_name = "Hugo Boss"
+    user_location = "Melbourne"
+    user_industry = "Restaurant"
+    user_business_hours = {"business_hours": [
+    { "day": "Monday",    "open": "08:00", "close": "19:00", "workers_required": 7, "day_off": False },
+    { "day": "Tuesday",   "open": "08:00", "close": "19:00", "workers_required": 7, "day_off": True },
+    { "day": "Wednesday", "open": "08:00", "close": "19:00", "workers_required": 7, "day_off": False },
+    { "day": "Thursday",  "open": "08:00", "close": "19:00", "workers_required": 7, "day_off": False },
+    { "day": "Friday",    "open": "08:00", "close": "19:00", "workers_required": 7, "day_off": False },
+    { "day": "Saturday",  "open": "08:00", "close": "19:00", "workers_required": 7, "day_off": False },
+    { "day": "Sunday",    "open": "08:00", "close": "19:00", "workers_required": 7, "day_off": False }
+    ]}
+
+    # prompt
+    template = f"""
+    Role: You are a shift scheduling assistant.
+
+    Basic Info:
+    - Business Name: {user_name} 
+    - Location: {user_location}  
+    - Industry: {user_industry}
+
+    Business Hours & Staffing Requirements:
+    {json.dumps(user_business_hours, indent=2)}
+
+    Scheduling Task:
+    Based on the business hours and user requests below, generate a shift schedule for next week. Ensure staffing matches the "workers_required" for each day, and respect "day_off" if true.
+
+    User Requests from Previous Conversation:
+    {chat_histories}
+
+    Output Format:
+    Return only JSON array like this:
+    [
+    {{
+        "id": 1,
+        "employee": "Alice",
+        "email": "alice@example.com",
+        "start": "2025-04-21T10:00:00",
+        "end": "2025-04-21T16:00:00"
+    }},
+    ...
+    ]
+    """
+
+    llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0, max_tokens=500)
+
+    answer_text = llm.invoke(template)
+
+    raw_output = answer_text.content if hasattr(answer_text, "content") else str(answer_text)
     parsed_answer = extract_all_json(raw_output)
 
     print('---------- Raw LLM Output ----------')
@@ -315,80 +369,128 @@ def ask():
     print(type(parsed_answer))
     print('------------------------------')
 
-    return jsonify({"task": task, "answer": parsed_answer})
+    return jsonify({"answer": parsed_answer})
 
 
+# -----------------------------
+# Global Variables
+# -----------------------------
+chat_histories = {}
+schedule_requirements = {}  # optional: to store structured user requests
 
+TRIGGER_WORDS = ["start scheduling", "generate schedule", "run schedule", "开始排班"]
 
-custom_context = """
-Role: You are a professional restaurant scheduling manager.
-Context: We are a sushi restaurant located in Melbourne. The restaurant is open daily from 10 am to 8 pm.
-Please generate the schedule for next week.
+# -----------------------------
+# LLM
+# -----------------------------
+llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0)
 
-Output Format: Please present the schedule as an excel-like table with columns:
-- ID
-- Employee Name
-- Email
-- Start Time (ISO format)
-- End Time (ISO format)
+SYSTEM_PROMPT = (
+    "You are a helpful AI scheduling assistant.\n"
+    "Your job is to:\n"
+    "1. First **call the tool `fetch_availability`** to retrieve employee availability.\n"
+    "2. Then generate a weekly schedule based on:\n"
+    "   - business hours\n"
+    "   - user scheduling requirements\n"
+    "   - employee availability (from the tool)\n\n"
+    "Output format must be a JSON array like this:\n"
+    "Do not guess availability, always use the tool."
+)
 
-Also return the schedule as valid JSON that can be parsed by json.loads().
-"""
-react_prompt = hub.pull("hwchase17/react")
+# -----------------------------
+# Tool Generator
+# -----------------------------
+def create_fetch_availability_tool(current_schedule_id: str):
+    @tool
+    def _fetch_availability(_: str = "") -> str:
+        """Fetch all employee availability for current schedule_id."""
+        if not re.fullmatch(r"[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}", current_schedule_id, re.I):
+            return json.dumps({"error": "invalid UUID format"})
 
-# Inject your context above the classic ReAct prompt
-react_prompt.template = f"{custom_context.strip()}\n\n{react_prompt.template}"
+        result = []
+        documents = availabilities_collection.find({"schedule_id": current_schedule_id})
+        for doc in documents:
+            employee = doc.get("employee_name", "")
+            email = doc.get("employee_email", "")
+            availability = doc.get("availability", {})
 
-print("Prompt Template:", react_prompt.template)
+            for day, time in availability.items():
+                if not isinstance(time, dict):
+                    continue
+                start = time.get("start")
+                end = time.get("end")
+                if start and end:
+                    result.append({
+                        "employee": employee,
+                        "email": email,
+                        "day": day.capitalize(),
+                        "start": start,
+                        "end": end
+                    })
+        return json.dumps(result, indent=2) or "[]"
 
-tools = [
-    # Add your tools here
-    #自动查数据 做排班
-    #自动下发排班通知
-]
-
-# agent model
-@app.route("/api/agent", methods=["POST"])
-def agent():
-    """
-    Example endpoint to get a schedule in JSON format from the LangChain pipeline.
-    We fix a 'task' about returning a scheduling table that can be parsed by json.load().
-    """
-    task = "Return a scheduling table that can be parsed by json.load function with fields:ID, Employee Name, Email,Start Time like this ISO format (2025-04-17T12:00:00), End Time."
-    
-    llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0)
-
-    agent = initialize_agent(
-        tools=tools,
-        llm=llm,
-        agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
-        prompt=react_prompt,
-        verbose=True
+    return Tool.from_function(
+        func=_fetch_availability,
+        name="fetch_availability",
+        description="Fetch all employees' availability for current schedule_id"
     )
 
-    agent.invoke({
-    "input": task,
-    "chat_history": [],  # 可选
-    "tool_input": {}     # 可选，除非你要控制 tool input
+# -----------------------------
+# Helper
+# -----------------------------
+def history_str(history):
+    return "\n".join(f"{turn['role'].capitalize()}: {turn['content']}" for turn in history)
+
+# -----------------------------
+# API Endpoint
+# -----------------------------
+@app.route("/api/agent-chat", methods=["POST"])
+def agent_chat():
+    data = request.get_json()
+    schedule_id = data.get("schedule_id")
+    user_input = data.get("message", "")
+
+    if not schedule_id or not user_input:
+        return jsonify({"error": "missing params"}), 400
+
+    # Save user message to history
+    chat_histories.setdefault(schedule_id, []).append({"role": "user", "content": user_input})
+    triggered = any(word in user_input.lower() for word in TRIGGER_WORDS)
+
+    if not triggered:
+        # Normal chat - collect requirements
+        ai_reply = llm.predict(f"{history_str(chat_histories[schedule_id])}\nUser: {user_input}\nAssistant:")
+        schedule_requirements.setdefault(schedule_id, []).append(user_input)
+    else:
+        # Trigger scheduling - create dynamic tool
+        dynamic_tool = create_fetch_availability_tool(schedule_id)
+        agent = initialize_agent(
+            tools=[dynamic_tool],  # ✅ 这里包含 tool
+            llm=llm,
+            agent=AgentType.OPENAI_FUNCTIONS,
+            prompt=SYSTEM_PROMPT,
+            verbose=True
+    )
+
+
+        # Optional: include requirements in context
+        result = agent.invoke({
+            "input": f"""
+        User has collected these scheduling requirements:\n
+        {schedule_requirements.get(schedule_id, [])}\n
+        Now use employee availability to generate a weekly schedule.
+        """
+        })
+
+        ai_reply = result["output"]
+
+    # Save AI reply
+    chat_histories[schedule_id].append({"role": "ai", "content": ai_reply})
+
+    return jsonify({
+        "response": ai_reply,
+        **({"chat_history": chat_histories[schedule_id]} if triggered else {})
     })
-
-
-
-
-
-
-
-
-
-
-@app.route('/api/data', methods=['GET'])
-def get_data():
-    """
-    Example endpoint to demonstrate a simple JSON response.
-    """
-    data = {"message": "This is a response from /api/data endpoint."}
-    return jsonify(data)
-
 
 if __name__ == '__main__':
     # Run Flask in debug mode on port 5001
