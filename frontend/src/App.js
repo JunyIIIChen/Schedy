@@ -8,6 +8,7 @@ import Availability from './Pages/Availability.jsx'
 import Calendar from './Pages/Calendar'
 import Settings from './Pages/Settings'
 import { LandingPage } from './Pages/LandingPage.jsx';
+import { HomePage } from './Pages/HomePage.jsx';
 
 
 
@@ -19,9 +20,10 @@ function App() {
         <Routes>
           <Route path='/' element={<LandingPage></LandingPage>} />
           <Route path='login' element={<LoginSignup></LoginSignup>}></Route>
+          <Route path='homepage' element={<HomePage></HomePage>}></Route>
           <Route path='/availability' element={<Availability></Availability>} />
           <Route path='/calendar' element={<Calendar></Calendar>} />
-          <Route path='/settings' element={<Settings> </Settings>} />
+          {/* <Route path='/settings' element={<Settings> </Settings>} /> */}
         </Routes>
         <Footer/>
       </BrowserRouter>

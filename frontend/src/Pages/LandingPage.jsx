@@ -25,7 +25,7 @@ export const LandingPage = () => {
                 <img src={arrow_icon} alt="" className="arrow-icon"/>
               </div>
       </Link>
-      <div><LinkGenerator></LinkGenerator></div>
+      
       
           <img className="bg-image frame8" src={frame8} alt=""/>
           <img className="bg-image frame23" src={frame23} alt=""/>

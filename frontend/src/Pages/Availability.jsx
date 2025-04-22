@@ -1,16 +1,12 @@
-import React from 'react'
-import './CSS/Availability.css'
-import { useState } from "react";
+import React, { useState } from "react";
+import "./CSS/Availability.css";
 import { useSearchParams } from "react-router-dom";
 
 function Availability() {
-  // 你也可以从 URL 上获取 schedule_id，例如:
-
   const [searchParams] = useSearchParams();
   const scheduleId = searchParams.get("sid");
-  // 这里用 props.scheduleId 演示
   console.log("Schedule ID:", scheduleId);
-  // 定义一周七天
+
   const days = [
     "Monday",
     "Tuesday",
@@ -21,14 +17,10 @@ function Availability() {
     "Sunday",
   ];
 
-  // 表单字段
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [preference, setPreference] = useState("");
 
-
-  // availability 存储每一天的 start/end，例如：
-  // availability.monday = { start: "09:00", end: "18:00" }
   const initialAvailability = {
     monday: { start: "09:00", end: "18:00" },
     tuesday: { start: "09:00", end: "18:00" },
@@ -40,10 +32,19 @@ function Availability() {
   };
 
   const [availability, setAvailability] = useState(initialAvailability);
+  const [unavailableDays, setUnavailableDays] = useState({
+    monday: false,
+    tuesday: false,
+    wednesday: false,
+    thursday: false,
+    friday: false,
+    saturday: false,
+    sunday: false,
+  });
+
   const [submitMessage, setSubmitMessage] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // 处理单个日期的时间变更
   const handleTimeChange = (dayKey, which, value) => {
     setAvailability((prev) => ({
       ...prev,
@@ -54,17 +55,26 @@ function Availability() {
     }));
   };
 
-  // 提交表单
+  const toggleUnavailable = (dayKey) => {
+    setUnavailableDays((prev) => ({
+      ...prev,
+      [dayKey]: !prev[dayKey],
+    }));
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     setLoading(true);
     setSubmitMessage(null);
 
-    // 组装数据
+    const filteredAvailability = Object.fromEntries(
+      Object.entries(availability).filter(([day]) => !unavailableDays[day])
+    );
+
     const payload = {
       name,
       email,
-      availability,
+      availability: filteredAvailability,
       preference,
     };
 
@@ -83,7 +93,7 @@ function Availability() {
           setSubmitMessage(data.error || "Error occurred!");
         }
       })
-      .catch((err) => {
+      .catch(() => {
         setSubmitMessage("Network error!");
       })
       .finally(() => {
@@ -123,30 +133,49 @@ function Availability() {
 
         <div className="availability-time-section">
           <h3>Available Time</h3>
-          {days.map((day) => (
-            <div key={day} className="day-row">
-              <span className="day-label">{day}</span>
-              <div className="time-selectors">
-                <input
-                  type="time"
-                  className="time-selector"
-                  value={availability[day.toLowerCase()].start}
-                  onChange={(e) =>
-                    handleTimeChange(day, "start", e.target.value)
-                  }
-                  required
-                />
-                <span className="time-dash"> - </span>
-                <input
-                  type="time"
-                  className="time-selector"
-                  value={availability[day.toLowerCase()].end}
-                  onChange={(e) => handleTimeChange(day, "end", e.target.value)}
-                  required
-                />
+          {days.map((day) => {
+            const key = day.toLowerCase();
+            const isUnavailable = unavailableDays[key];
+            return (
+              <div
+                key={day}
+                className={`day-row ${isUnavailable ? "disabled-row" : ""}`}
+              >
+                <span className="day-label">{day}</span>
+                <div className="time-selectors">
+                  <input
+                    type="time"
+                    className="time-selector"
+                    value={availability[key].start}
+                    onChange={(e) =>
+                      handleTimeChange(day, "start", e.target.value)
+                    }
+                    disabled={isUnavailable}
+                    required
+                  />
+                  <span className="time-dash"> - </span>
+                  <input
+                    type="time"
+                    className="time-selector"
+                    value={availability[key].end}
+                    onChange={(e) =>
+                      handleTimeChange(day, "end", e.target.value)
+                    }
+                    disabled={isUnavailable}
+                    required
+                  />
+                  <label className="unavailable-label">
+                    <input
+                      type="checkbox"
+                      checked={isUnavailable}
+                      onChange={() => toggleUnavailable(key)}
+                    />
+                    Unavailable
+                  </label>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         <label className="form-label" htmlFor="preference">
@@ -161,7 +190,7 @@ function Availability() {
         >
           <option value="">Select one</option>
           <option value="morning">Morning (before 12pm)</option>
-          <option value="afternoon">Afternoon (12pm–5pm)</option>
+          <option value="afternoon">Afternoon (12pm-5pm)</option>
           <option value="evening">Evening (after 5pm)</option>
           <option value="flexible">Flexible</option>
         </select>
@@ -176,4 +205,3 @@ function Availability() {
 }
 
 export default Availability;
-

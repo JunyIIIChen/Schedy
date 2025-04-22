@@ -1,0 +1,107 @@
+.ai-chat-container {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    border-radius: 10px;
+    background: #fefefe;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+  
+  .ai-chat-header {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  .ai-chat-messages {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-bottom: 15px;
+    background: #fafafa;
+    border-radius: 6px;
+    padding: 10px;
+  }
+  
+  .ai-message {
+    margin-bottom: 10px;
+  }
+  
+  .ai-message.user {
+    text-align: right;
+  }
+  
+  .ai-message.ai {
+    text-align: left;
+  }
+  
+  .ai-message-content {
+    display: inline-block;
+    padding: 10px 14px;
+    border-radius: 10px;
+    background: #e6f2ff;
+    max-width: 80%;
+    white-space: pre-wrap;
+  }
+  
+  .ai-message.user .ai-message-content {
+    background: #cce5ff;
+  }
+  
+  .ai-loading {
+    color: #888;
+    font-style: italic;
+    margin-top: 10px;
+  }
+  
+  .ai-chat-textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+    resize: vertical;
+  }
+  
+  .ai-chat-send-button {
+    width: 100%;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  .ai-chat-send-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+  }
+  
+  .ai-schedule-table {
+    margin-top: 30px;
+    background: #fff;
+    border-radius: 8px;
+    padding: 10px;
+    border: 1px solid #ccc;
+  }
+  
+  .ai-schedule-table table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .ai-schedule-table th,
+  .ai-schedule-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+  }
+  
+  .ai-schedule-table th {
+    background-color: #f3f3f3;
+  }
+
+  
+  

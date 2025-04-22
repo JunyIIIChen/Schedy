@@ -1,43 +1,42 @@
 import React, { useState } from 'react'
 
-export const LinkGenerator = () => {
-  const [link, setLink] = useState('');
-  const [error, setError] = useState('');
+export const LinkGenerator = ({ onScheduleGenerated }) => {
+  const [link, setLink] = useState('')
+  const [error, setError] = useState('')
 
   const handleGenerateLink = async () => {
-    const token = localStorage.getItem("auth-token"); // Get the stored JWT
-
+    const token = localStorage.getItem("auth-token")
     if (!token) {
-      setError("No token found. Please login first.");
-      return;
+      setError("No token found. Please login first.")
+      return
     }
 
     try {
       const res = await fetch("http://localhost:5001/api/schedule", {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${token}`,  // Send token to backend
+          "Authorization": `Bearer ${token}`,
           "Content-Type": "application/json"
         }
-      });
-
-      const data = await res.json();
-
+      })
+      const data = await res.json()
       if (!res.ok) {
-        setError(data.error || "Failed to generate link");
-        return;
+        setError(data.error || "Failed to generate link")
+        return
       }
 
-      // Construct frontend link for employees to access the form
-      const scheduleId = data.schedule_id;
-      const generatedLink = `${window.location.origin}/availability?sid=${scheduleId}`;
-      setLink(generatedLink);
-      setError('');
+      const scheduleId = data.schedule_id
+      // tell your parent about it
+      onScheduleGenerated(scheduleId)
+
+      const generatedLink = `${window.location.origin}/availability?sid=${scheduleId}`
+      setLink(generatedLink)
+      setError('')
     } catch (err) {
-      setError("Something went wrong");
-      console.error(err);
+      setError("Something went wrong")
+      console.error(err)
     }
-  };
+  }
 
   return (
     <div>
@@ -52,5 +51,5 @@ export const LinkGenerator = () => {
 
       {error && <p style={{ color: 'red' }}>{error}</p>}
     </div>
-  );
-};
+  )
+}
