@@ -8,7 +8,7 @@ const localizer = momentLocalizer(moment);
 
 const EventCalendar = () => {
         const [events, setEvents] = useState([]);
-        const [loading, setLoading] = useState(true);
+        const [loading, setLoading] = useState(false);
         const [visible, setVisible] = useState(false);
         const [selectedEvent, setSelectedEvent] = useState(null);
         const [form] = Form.useForm();
@@ -16,47 +16,56 @@ const EventCalendar = () => {
         const [error, setError] = useState('');
 
         useEffect(() => {
-        const load_user_information = async () => {
-            const token = localStorage.getItem("auth-token");
+            const load_user_information = async () => {
+                const token = localStorage.getItem("auth-token");
 
-            if (!token) {
-                setError("No token found. Please login first.");
-                return;
-            }
-
-            try {
-                const res = await fetch("http://localhost:5001/api/basic", {
-                    method: "POST",
-                    headers: {
-                        "Authorization": `Bearer ${token}`,
-                        "Content-Type": "application/json"
-                    }
-                });
-
-                if (!res.ok) {
-                    throw new Error(`HTTP error! status: ${res.status}`);
+                if (!token) {
+                    setError("No token found. Please login first.");
+                    return;
                 }
 
-                const data = await res.json();
-                // console.log("User data:", data);
-                setUserData(data);
-                setEvents(data.events);
+                try {
+                    const res = await fetch("http://localhost:5001/api/basic", {
+                        method: "POST",
+                        headers: {
+                            "Authorization": `Bearer ${token}`,
+                            "Content-Type": "application/json"
+                        }
+                    });
 
+                    if (!res.ok) {
+                        throw new Error(`HTTP error! status: ${res.status}`);
+                    }
 
-            } catch (err) {
-                setError("Something went wrong");
-                console.error("Fetch error:", err);
-            }
-        };
+                    const data = await res.json();
+                    // console.log("User data:", data);
+                    setUserData(data);
+                    setEvents(
+                        data.events.map(event => ({
+                            id: event.id,
+                            start: new Date(event.start), // 确保 event.start 是合法时间字符串或时间戳
+                            end: new Date(event.end),     // 同上
+                            employee: event.employee,
+                            email: event.email,
 
-        load_user_information();
+                        }))
+                    );
+                    // console.log("User data:", data);
 
-    }, []);
+                } catch (err) {
+                    setError("Something went wrong");
+                    console.error("Fetch error:", err);
+                }
+            };
+
+            load_user_information();
+
+        }, []);
 
         const handleSelectEvent = (event) => {
             setSelectedEvent(event);
             form.setFieldsValue({
-                name: event.name,
+                employee: event.employee,
                 email: event.email,
                 start: moment(event.start).format('YYYY-MM-DDTHH:mm'),
                 end: moment(event.end).format('YYYY-MM-DDTHH:mm')
@@ -70,9 +79,9 @@ const EventCalendar = () => {
                     id: selectedEvent ? selectedEvent.id : Date.now(),
                     start: new Date(values.start),
                     end: new Date(values.end),
-                    name: values.name,
+                    employee: values.employee,
                     email: values.email,
-                    title: `${values.name} (${values.email})`
+                    title: `${values.employee} (${values.email})`
                 };
 
                 if (selectedEvent) {
@@ -99,8 +108,35 @@ const EventCalendar = () => {
         };
 
         const saveToSQL = async (index) => {
-            userData.events = events;
-            console.log(userData)
+
+            const eventsWithISOString = events.map(event => ({
+                    ...event,
+                    "start": new Intl.DateTimeFormat('sv-SE', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit',
+                        hour12: false
+                    }).format(event.start).replace(' ', 'T'),
+                    "end": new Intl.DateTimeFormat('sv-SE', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit',
+                        hour12: false
+                    }).format(event.end).replace(' ', 'T'),
+                    "id": event.id,
+                    "employee": event.employee,
+                    "email": event.email
+                }))
+            ;
+
+            userData.events = eventsWithISOString;
+            // console.log(userData.events);
 
             try {
                 const token = localStorage.getItem("auth-token");
@@ -136,26 +172,27 @@ const EventCalendar = () => {
         };
 
         const new_schedule = async (index) => {
+            setLoading(true);
             try {
                 const response = await fetch('http://localhost:5001/ask');
                 const data = await response.json();
-
+                console.log(data)
                 // Extract the events array from the response
                 // The data structure shows events are in data.answer[0] to data.answer[13]
                 // and then duplicated in data.answer[14], so we'll take the first set
-                const eventsData = Array.isArray(data.answer[0]) ? data.answer[0] : data.answer.slice(0, 14);
+                // const eventsData = Array.isArray(data.answer[0]) ? data.answer[0] : data.answer.slice(0, 14);
 
                 // Transform the backend data to match the calendar's expected format
-                const formattedEvents = eventsData.map(event => ({
-                    id: event.ID,
-                    start: new Date(event['Start Time']),
-                    end: new Date(event['End Time']),
-                    name: event['Employee Name'],
-                    email: event.Email,
-                    title: `${event['Employee Name']} (${event.Email})` // Added title for better display
+                const formattedEvents = data.map(event => ({
+                    id: event.id,
+                    start: new Date(event['start']),
+                    end: new Date(event['end']),
+                    employee: event['employee'],
+                    email: event.email,
                 }));
 
                 setEvents(formattedEvents);
+                // console.log(formattedEvents)
                 setLoading(false);
             } catch (error) {
                 console.error('Error fetching events:', error);
@@ -163,13 +200,13 @@ const EventCalendar = () => {
             }
         }
 
-        // if (loading) {
-        //     return (
-        //         <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh'}}>
-        //             <Spin size="large"/>
-        //         </div>
-        //     );
-        // }
+        if (loading) {
+            return (
+                <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh'}}>
+                    <Spin size="large"/>
+                </div>
+            );
+        }
 
         return (
             <div style={{height: '700px', padding: '20px'}}>
@@ -185,7 +222,7 @@ const EventCalendar = () => {
                     components={{
                         event: ({event}) => (
                             <div>
-                                <strong>{event.name}</strong>
+                                <strong>{event.employee}</strong>
                                 <div>{event.email}</div>
                             </div>
                         )
@@ -193,7 +230,7 @@ const EventCalendar = () => {
                 />
 
                 <Modal
-                    title={selectedEvent ? "Edit Event" : "Add New Event"}
+                    title={selectedEvent ? "Edit Event" : "Add New Schedule"}
                     visible={visible}
                     onOk={handleSubmit}
                     onCancel={() => setVisible(false)}
@@ -201,7 +238,7 @@ const EventCalendar = () => {
                     cancelText="Cancel"
                 >
                     <Form form={form} layout="vertical">
-                        <Form.Item name="name" label="Employee Name" rules={[{required: true}]}>
+                        <Form.Item name="employee" label="Employee Name" rules={[{required: true}]}>
                             <Input/>
                         </Form.Item>
                         <Form.Item name="email" label="Email" rules={[{type: 'email', required: true}]}>

@@ -332,32 +332,32 @@ llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0)
 chain = prompt | llm
 
 
-# @app.route("/as", methods=["GET", "POST"])
-# def asfas():
-#     schedule_data = [
-#         {
-#             'name': 'Team Meeting',
-#             'email': 'asdasda@gmail.com',
-#             "End Time": "2025-04-17T22:00:00",
-#             'id': 1,
-#             "Start Time": "2025-04-17T21:00:00"
-#         },
-#         {
-#             'name': 'Lunch Appointment',
-#             'email': 'asdasda@gmail.com',
-#             "End Time": "2025-04-18T12:00:00",
-#             'id': 2,
-#             "Start Time": "2025-04-18T11:00:00"
-#         },
-#         {
-#             'name': 'All Day Conference',
-#             'email': 'asdasda@gmail.com',
-#             "End Time": "2025-04-19T11:00:00",
-#             'id': 3,
-#             "Start Time": "2025-04-19T10:00:00"
-#         }
-#     ]
-#     return jsonify(schedule_data)
+@app.route("/as", methods=["GET", "POST"])
+def asfas():
+    schedule_data = [
+        {
+            'employee': 'Team Meeting',
+            'email': 'asdasda@gmail.com',
+            "end": "2025-04-23T22:00:00",
+            'id': 1,
+            "start": "2025-04-23T21:00:00"
+        },
+        {
+            'employee': 'Lunch Appointment',
+            'email': 'da@gmail.com',
+            "end": "2025-04-22T12:00:00",
+            'id': 2,
+            "start": "2025-04-22T11:00:00"
+        },
+        {
+            'employee': 'All Day Conference',
+            'email': 'sdasda@gmail.com',
+            "end": "2025-04-21T11:00:00",
+            'id': 3,
+            "start": "2025-04-21T10:00:00"
+        }
+    ]
+    return jsonify(schedule_data)
 
 
 @app.route("/ask", methods=["GET", "POST"])
