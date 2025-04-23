@@ -14,12 +14,8 @@ import json
 
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import PromptTemplate
-from langchain.chains import LLMChain
 from langchain.agents import initialize_agent, AgentType
-from langchain.memory import ConversationBufferMemory
 from langchain.tools import tool
-from langchain import hub
-from langchain.tools import StructuredTool
 from langchain.agents import Tool
 
 
@@ -278,15 +274,6 @@ def submit_availability(schedule_id):
 
 
 
-from flask import Flask, request, jsonify
-from flask_cors import CORS
-from langchain.agents import initialize_agent, AgentType, Tool
-from langchain.tools import tool
-from langchain_openai import ChatOpenAI
-import re, json
-from pymongo import MongoClient
-
-
 # -----------------------------
 # JSON 提取工具
 # -----------------------------
@@ -439,15 +426,33 @@ def schedule_agent():
 def view_calendar():
     data = request.get_json()
     schedule_id = data.get("schedule_id")
+
+    if not schedule_id:
+        return jsonify({"error": "Missing schedule_id"}), 400
+
+    # 获取聊天记录
     record = chat_collection.find_one({"schedule_id": schedule_id})
     history = record.get("history", []) if record else []
-
 
     if not history:
         return jsonify({"error": "No chat history found for this schedule_id"}), 404
 
     messages = "\n".join([f"{m['role']}: {m['content']}" for m in history])
 
+    # 获取可用时间数据
+    documents = availabilities_collection.find({"schedule_id": schedule_id})
+    availability_data = []
+    for doc in documents:
+        employee = doc.get("employee_name", "")
+        email = doc.get("employee_email", "")
+        availability = doc.get("availability", {})
+        preference = doc.get("preference", {})
+        availability_data.append({
+            "employee": employee,
+            "email": email,
+            "availability": availability,
+            "preference": preference
+        })
 
     # 🗓️ 获取下周日期范围
     today = datetime.date.today()
@@ -456,20 +461,20 @@ def view_calendar():
     start_date = next_monday.isoformat()
     end_date = next_sunday.isoformat()
 
-
     prompt = f"""
-    You are a professional scheduling assistant.
-    Here is the full chat history:
-    {messages}
+You are a professional scheduling assistant.
+Here is the full chat history:
+{messages}
 
+Here is the employee availability data:
+{json.dumps(availability_data, indent=2)}
 
-
-    Now based on this conversation, generate the schedule for the week from {start_date} to {end_date}.
-    Return only a JSON array like:
-    [
-    {{"id": 1, "employee": "Alice", "email": "alice@example.com", "start": "2025-04-21T10:00:00", "end": "2025-04-21T16:00:00"}}
-    ]
-    """
+Now based on both the chat and employee availability, generate the schedule for the week from {start_date} to {end_date}.
+Return only a valid JSON array like:
+[
+  {{"id": 1, "employee": "Alice", "email": "alice@example.com", "start": "{start_date}T10:00:00", "end": "{start_date}T16:00:00"}}
+]
+"""
 
     raw_output = llm.invoke(prompt)
     content = raw_output.content if hasattr(raw_output, "content") else str(raw_output)
@@ -477,7 +482,8 @@ def view_calendar():
 
     return jsonify({
         "calendar_json": extracted,
-        "raw": content
+        "raw": content,
+        "availabilities_count": len(availability_data)
     })
 
 
