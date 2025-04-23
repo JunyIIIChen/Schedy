@@ -431,8 +431,9 @@ def schedule_agent():
         "schedule_data": json_schedule
     })
 
+
 # -----------------------------
-# 查看日历接口（从聊天记录生成 JSON）
+# 查看日历接口（从聊天记录生成 JSON） now is working
 # -----------------------------
 @app.route("/api/view-calendar", methods=["POST"])
 def view_calendar():
