@@ -43,47 +43,8 @@ db = client['scheduler']
 users_collection = db['users']
 schedules_collection = db['schedules']
 availabilities_collection = db['availabilities']
+chat_collection = db['chat_histories']
 
-
-def extract_all_json(text: str):
-    """
-    Attempt to extract valid JSON objects or arrays from the given text.
-    1. Tries to parse the entire text as JSON.
-    2. If that fails, uses regex to find all JSON objects ({...}) and arrays ([...]) within the text.
-    3. Returns:
-       - A single parsed JSON if only one match is found,
-       - A list of parsed JSON objects if multiple are found,
-       - Or an error dict if no valid JSON can be extracted.
-    """
-    # 1) Try parsing the entire text directly
-    try:
-        return json.loads(text)
-    except json.JSONDecodeError:
-        pass
-
-    # 2) Regex-based search for JSON objects ({...}) or arrays ([...])
-    results = []
-    json_patterns = [
-        r'(\{.*?\})',  # Match JSON objects
-        r'(\[.*?\])'   # Match JSON arrays
-    ]
-    for pattern in json_patterns:
-        matches = re.findall(pattern, text, flags=re.DOTALL)
-        for match in matches:
-            try:
-                parsed = json.loads(match)
-                results.append(parsed)
-            except json.JSONDecodeError:
-                continue
-
-    # 3) Decide what to return based on the number of matches
-    if len(results) == 1:
-        return results[0]  # Return the single JSON object/array
-    elif len(results) > 1:
-        return results     # Return a list of JSON objects/arrays
-    else:
-        # If no valid JSON was found, return the raw text with an error
-        return {"error": "Failed to extract any valid JSON.", "raw_text": text}
 
 
 @app.route('/')
@@ -317,169 +278,76 @@ def submit_availability(schedule_id):
 
 
 
-# --- LangChain Setup ---
-template = """
-Role: You are a professional restaurant scheduling manager.
-Context: We are a sushi restaurant located in Melbourne. The restaurant is open daily from 10 am to 8 pm. Please generate next week schedule.
-Output Format: Please present the schedule as an excel-like table with columns ID, Employee Name, Email,Start Time like ISO format, End Time, 
-and also return the table as JSON.
-Task: {task}
-Max Token: 100
-Answer:
-"""
-prompt = PromptTemplate(template=template, input_variables=["task"])
-llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0)
-chain = prompt | llm
-
-
-# @app.route("/as", methods=["GET", "POST"])
-# def asfas():
-#     schedule_data = [
-#         {
-#             'name': 'Team Meeting',
-#             'email': 'asdasda@gmail.com',
-#             "End Time": "2025-04-17T22:00:00",
-#             'id': 1,
-#             "Start Time": "2025-04-17T21:00:00"
-#         },
-#         {
-#             'name': 'Lunch Appointment',
-#             'email': 'asdasda@gmail.com',
-#             "End Time": "2025-04-18T12:00:00",
-#             'id': 2,
-#             "Start Time": "2025-04-18T11:00:00"
-#         },
-#         {
-#             'name': 'All Day Conference',
-#             'email': 'asdasda@gmail.com',
-#             "End Time": "2025-04-19T11:00:00",
-#             'id': 3,
-#             "Start Time": "2025-04-19T10:00:00"
-#         }
-#     ]
-#     return jsonify(schedule_data)
-
-
-@app.route("/ask", methods=["GET", "POST"])
-def ask():
-    data = request.get_json()
-    chat_histories = data.get("chat_history")
-
-    # Get user
-    # user = users_collection.find_one({"id": id}) 
-
-    # user_business_hour = user.get("business_hour")
-    
-
-    # user_name = user.get("name")
-    # user_location = user.get("user_location")
-    # user_industry = user.get("user_industry")
-
-
-    user_name = "Hugo Boss"
-    user_location = "Melbourne"
-    user_industry = "Restaurant"
-    user_business_hours = {"business_hours": [
-    { "day": "Monday",    "open": "08:00", "close": "19:00", "workers_required": 7, "day_off": False },
-    { "day": "Tuesday",   "open": "08:00", "close": "19:00", "workers_required": 7, "day_off": True },
-    { "day": "Wednesday", "open": "08:00", "close": "19:00", "workers_required": 7, "day_off": False },
-    { "day": "Thursday",  "open": "08:00", "close": "19:00", "workers_required": 7, "day_off": False },
-    { "day": "Friday",    "open": "08:00", "close": "19:00", "workers_required": 7, "day_off": False },
-    { "day": "Saturday",  "open": "08:00", "close": "19:00", "workers_required": 7, "day_off": False },
-    { "day": "Sunday",    "open": "08:00", "close": "19:00", "workers_required": 7, "day_off": False }
-    ]}
-
-    # prompt
-    template = f"""
-    Role: You are a shift scheduling assistant.
-
-    Basic Info:
-    - Business Name: {user_name} 
-    - Location: {user_location}  
-    - Industry: {user_industry}
-
-    Business Hours & Staffing Requirements:
-    {json.dumps(user_business_hours, indent=2)}
-
-    Scheduling Task:
-    Based on the business hours and user requests below, generate a shift schedule for next week. Ensure staffing matches the "workers_required" for each day, and respect "day_off" if true.
-
-    User Requests from Previous Conversation:
-    {chat_histories}
-
-    Output Format:
-    Return only JSON array like this:
-    [
-    {{
-        "id": 1,
-        "employee": "Alice",
-        "email": "alice@example.com",
-        "start": "2025-04-21T10:00:00",
-        "end": "2025-04-21T16:00:00"
-    }},
-    ...
-    ]
-    """
-
-    llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0, max_tokens=500)
-
-    answer_text = llm.invoke(template)
-
-    raw_output = answer_text.content if hasattr(answer_text, "content") else str(answer_text)
-    parsed_answer = extract_all_json(raw_output)
-
-    print('---------- Raw LLM Output ----------')
-    print(raw_output)
-    print('---------- Extracted JSON Type ----------')
-    print(type(parsed_answer))
-    print('------------------------------')
-
-    return jsonify({"answer": parsed_answer})
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+from langchain.agents import initialize_agent, AgentType, Tool
+from langchain.tools import tool
+from langchain_openai import ChatOpenAI
+import re, json
+from pymongo import MongoClient
 
 
 # -----------------------------
-# Global Variables
+# JSON 提取工具
+# -----------------------------
+def extract_all_json(text):
+    try:
+        return json.loads(text)
+    except:
+        match = re.search(r'\[\s*{.+?}\s*\]', text, re.DOTALL)
+        if match:
+            try:
+                return json.loads(match.group())
+            except:
+                return None
+    return None
+
+# -----------------------------
+# 日期修改工具
+# -----------------------------
+def get_next_week_range():
+    today = datetime.date.today()
+    next_monday = today + datetime.timedelta(days=(7 - today.weekday()))
+    next_sunday = next_monday + datetime.timedelta(days=6)
+    return next_monday.isoformat(), next_sunday.isoformat()
+
+
+# -----------------------------
+# 全局变量
 # -----------------------------
 chat_histories = {}
-schedule_requirements = {}  # optional: to store structured user requests
-
+schedule_requirements = {}
 TRIGGER_WORDS = ["start scheduling", "generate schedule", "run schedule", "开始排班"]
 
-# -----------------------------
-# LLM
-# -----------------------------
-llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0)
+llm = ChatOpenAI(model_name="gpt-4o", temperature=0)
 
 SYSTEM_PROMPT = (
     "You are a helpful AI scheduling assistant.\n"
-    "Your job is to:\n"
-    "1. First **call the tool `fetch_availability`** to retrieve employee availability.\n"
+    "1. First call the tool `fetch_availability` to retrieve employee availability.\n"
     "2. Then generate a weekly schedule based on:\n"
     "   - business hours\n"
     "   - user scheduling requirements\n"
     "   - employee availability (from the tool)\n\n"
     "Output format must be a JSON array like this:\n"
-    "Do not guess availability, always use the tool."
+    "[{'id': 1, 'employee': 'Alice', 'email': 'alice@example.com', 'start': '2025-04-21T10:00:00', 'end': '2025-04-21T16:00:00'}]"
 )
 
-
 # -----------------------------
-# Tool Generator
+# 工具生成器
 # -----------------------------
-def create_fetch_availability_tool(current_schedule_id: str):
+def create_fetch_availability_tool():
     @tool
-    def _fetch_availability(_: str = "") -> str:
-        """Fetch all employee availability for current schedule_id."""
-        if not re.fullmatch(r"[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}", current_schedule_id, re.I):
+    def fetch_availability(schedule_id: str) -> str:
+        """Fetch all employee availability by schedule_id."""
+        if not re.fullmatch(r"[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}", schedule_id, re.I):
             return json.dumps({"error": "invalid UUID format"})
 
         result = []
-        documents = availabilities_collection.find({"schedule_id": current_schedule_id})
+        documents = availabilities_collection.find({"schedule_id": schedule_id})
         for doc in documents:
             employee = doc.get("employee_name", "")
             email = doc.get("employee_email", "")
             availability = doc.get("availability", {})
-
             for day, time in availability.items():
                 if not isinstance(time, dict):
                     continue
@@ -496,67 +364,121 @@ def create_fetch_availability_tool(current_schedule_id: str):
         return json.dumps(result, indent=2) or "[]"
 
     return Tool.from_function(
-        func=_fetch_availability,
+        func=fetch_availability,
         name="fetch_availability",
-        description="Fetch all employees' availability for current schedule_id"
+        description="Fetch availability data for the given schedule_id"
     )
-
 # -----------------------------
-# Helper
+# 主聊天接口
 # -----------------------------
-def history_str(history):
-    return "\n".join(f"{turn['role'].capitalize()}: {turn['content']}" for turn in history)
-
-# -----------------------------
-# API Endpoint
-# -----------------------------
-@app.route("/api/agent-chat", methods=["POST"])
-def agent_chat():
+@app.route("/api/schedule-agent", methods=["POST"])
+def schedule_agent():
     data = request.get_json()
     schedule_id = data.get("schedule_id")
     user_input = data.get("message", "")
 
     if not schedule_id or not user_input:
-        return jsonify({"error": "missing params"}), 400
+        return jsonify({"error": "Missing schedule_id or message"}), 400
 
-    # Save user message to history
-    chat_histories.setdefault(schedule_id, []).append({"role": "user", "content": user_input})
+    chat_collection.update_one(
+        {"schedule_id": schedule_id},
+        {"$push": {"history": {"role": "user", "content": user_input}}},
+        upsert=True
+    )
     triggered = any(word in user_input.lower() for word in TRIGGER_WORDS)
 
     if not triggered:
-        # Normal chat - collect requirements
-        ai_reply = llm.predict(f"{history_str(chat_histories[schedule_id])}\nUser: {user_input}\nAssistant:")
+        ai_reply = llm.predict(f"{user_input}")
         schedule_requirements.setdefault(schedule_id, []).append(user_input)
-    else:
-        # Trigger scheduling - create dynamic tool
-        dynamic_tool = create_fetch_availability_tool(schedule_id)
-        agent = initialize_agent(
-            tools=[dynamic_tool],  # ✅ 这里包含 tool
-            llm=llm,
-            agent=AgentType.OPENAI_FUNCTIONS,
-            prompt=SYSTEM_PROMPT,
-            verbose=True
+        chat_collection.update_one(
+            {"schedule_id": schedule_id},
+            {"$push": {"history": {"role": "ai", "content": ai_reply}}}
+        )
+        return jsonify({"response": ai_reply})
+
+    tool = create_fetch_availability_tool()
+    agent = initialize_agent(
+        tools=[tool],
+        llm=llm,
+        agent=AgentType.OPENAI_FUNCTIONS,
+        prompt=SYSTEM_PROMPT,
+        verbose=True
     )
 
+    requirements = "\n".join(schedule_requirements.get(schedule_id, []))
+    result = agent.invoke({
+        "input": f"""
+        User has collected these scheduling requirements:
+        {requirements}
+        Schedule ID: {schedule_id}
+        Generate the schedule now.
+        """,
+        "schedule_id": schedule_id
+    })
 
-        # Optional: include requirements in context
-        result = agent.invoke({
-            "input": f"""
-        User has collected these scheduling requirements:\n
-        {schedule_requirements.get(schedule_id, [])}\n
-        Now use employee availability to generate a weekly schedule.
-        """
-        })
+    ai_reply = result["output"]
+    chat_collection.update_one(
+        {"schedule_id": schedule_id},
+        {"$push": {"history": {"role": "ai", "content": ai_reply}}}
+    )
 
-        ai_reply = result["output"]
-
-    # Save AI reply
-    chat_histories[schedule_id].append({"role": "ai", "content": ai_reply})
+    json_schedule = extract_all_json(ai_reply)
+    print("~~~~~~~~Extracted JSON:", json_schedule)
+    print("~~~~~~~~Type of JSON:", type(json_schedule))
 
     return jsonify({
         "response": ai_reply,
-        **({"chat_history": chat_histories[schedule_id]} if triggered else {})
+        "schedule_data": json_schedule
     })
+
+# -----------------------------
+# 查看日历接口（从聊天记录生成 JSON）
+# -----------------------------
+@app.route("/api/view-calendar", methods=["POST"])
+def view_calendar():
+    data = request.get_json()
+    schedule_id = data.get("schedule_id")
+    record = chat_collection.find_one({"schedule_id": schedule_id})
+    history = record.get("history", []) if record else []
+
+
+    if not history:
+        return jsonify({"error": "No chat history found for this schedule_id"}), 404
+
+    messages = "\n".join([f"{m['role']}: {m['content']}" for m in history])
+
+
+    # 🗓️ 获取下周日期范围
+    today = datetime.date.today()
+    next_monday = today + datetime.timedelta(days=(7 - today.weekday()))
+    next_sunday = next_monday + datetime.timedelta(days=6)
+    start_date = next_monday.isoformat()
+    end_date = next_sunday.isoformat()
+
+
+    prompt = f"""
+    You are a professional scheduling assistant.
+    Here is the full chat history:
+    {messages}
+
+
+
+    Now based on this conversation, generate the schedule for the week from {start_date} to {end_date}.
+    Return only a JSON array like:
+    [
+    {{"id": 1, "employee": "Alice", "email": "alice@example.com", "start": "2025-04-21T10:00:00", "end": "2025-04-21T16:00:00"}}
+    ]
+    """
+
+    raw_output = llm.invoke(prompt)
+    content = raw_output.content if hasattr(raw_output, "content") else str(raw_output)
+    extracted = extract_all_json(content)
+
+    return jsonify({
+        "calendar_json": extracted,
+        "raw": content
+    })
+
 
 if __name__ == '__main__':
     # Run Flask in debug mode on port 5001
