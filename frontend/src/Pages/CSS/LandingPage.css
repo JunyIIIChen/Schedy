@@ -82,3 +82,78 @@ transform: rotate(15deg);
 .LandingPage-latest-btn img{
   width: 18px;
 }
+/* 中等屏幕：适配 1020px 以下（如小笔记本、平板横屏） */
+@media (max-width: 1020px) {
+  .LandingPage {
+    padding: 120px 40px;
+  }
+
+  .LandingPage h2 {
+    font-size: 36px;
+    line-height: 42px;
+    margin-bottom: 60px;
+    text-align: center;
+  }
+
+  .LandingPage p {
+    font-size: 15px;
+    line-height: 24px;
+    margin-bottom: 60px;
+    text-align: center;
+  }
+
+  .LandingPage-latest-btn {
+    width: 220px;
+    height: 55px;
+    font-size: 15px;
+  }
+
+  .LandingPage-latest-btn img {
+    width: 16px;
+  }
+
+  .frame8, .frame10, .frame23, .frame24, .frame25, .frame26 {
+    transform: scale(0.8) rotate(15deg);
+    opacity: 0.8;
+  }
+}
+
+/* 小屏幕：适配 768px 以下（如手机） */
+@media (max-width: 768px) {
+  .LandingPage {
+    padding: 80px 20px;
+  }
+
+  .LandingPage h2 {
+    font-size: 28px;
+    line-height: 34px;
+    margin-bottom: 40px;
+    text-align: center;
+  }
+
+  .LandingPage p {
+    font-size: 14px;
+    line-height: 22px;
+    margin-bottom: 40px;
+    text-align: center;
+  }
+
+  .LandingPage-latest-btn {
+    width: 180px;
+    height: 48px;
+    font-size: 14px;
+  }
+
+  .LandingPage-latest-btn img {
+    width: 14px;
+  }
+
+  .bg-image {
+    display: none;
+  }
+
+  .frame8, .frame10, .frame23, .frame24, .frame25, .frame26 {
+    transform: scale(0.6) rotate(15deg);
+    opacity: 0.6;
+  }
+}

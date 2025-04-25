@@ -82,6 +82,7 @@ export const AIChat = ({ scheduleId }) => {
 
       const data = await res.json();
       console.log('📅 View Calendar 返回：', data);
+      console.log('data.availabilities_count:', data.availabilities_count);
 
       if (data.calendar_json && Array.isArray(data.calendar_json)) {
         setCalendarData(data.calendar_json);

@@ -17,8 +17,8 @@ import frame10 from '../Component/Assets/Frame10.png'
 export const LandingPage = () => {
   return (
       <div className='LandingPage'>
-          <h2>Smarter Shifts, Happier Teams</h2>
-          <p>A intelligent scheduling assistant designed for small business owners.</p>
+          <h2>Smarter Scheduling, Powered by AI</h2>
+          <p>An intelligent assistant designed for small business owners takes the stress out of shift scheduling.</p>
           <Link to="/login" className="LandingPage-latest-btn" style={{ textDecoration: 'none' }}>
               <div className="btn-content">
                 <span>Try for free    </span>
