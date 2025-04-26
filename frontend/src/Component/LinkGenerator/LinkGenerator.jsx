@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import './LinkGenerator.css'
 
 export const LinkGenerator = ({ onScheduleGenerated }) => {
   const [link, setLink] = useState('')
@@ -40,7 +41,7 @@ export const LinkGenerator = ({ onScheduleGenerated }) => {
 
   return (
     <div>
-      <button onClick={handleGenerateLink}>Generate Schedule Link</button>
+      <button className= "gradient-button" onClick={handleGenerateLink}>Generate</button>
 
       {link && (
         <div style={{ marginTop: "10px" }}>

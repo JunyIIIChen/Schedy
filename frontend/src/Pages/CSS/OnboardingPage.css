@@ -26,32 +26,45 @@
     color: #333;
     margin-bottom: 32px;
   }
+
+  .onboarding-svg-icon{
+    margin-bottom: 48px;
+  }
   
   .glass-box {
-    width: 600px;
+    display: flex;
+    width: 912px;
     padding: 16px 20px;
     margin-bottom: 16px;
     border-radius: 14px;
     background: rgba(255, 255, 255, 0.6);
-    box-shadow: 0px 4px 30px rgba(0, 0, 0, 0.05);
+    box-shadow: 0px 8px 30px rgba(99, 140, 243, 0.2);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
     font-size: 16px;
     font-weight: 500;
     color: #111;
   }
-  
-  .input-field,
-  .dropdown-field {
-    width: 640px;
-    /* padding: 14px; */
-    /* margin: 10px 0; */
-    border-radius: 12px;
-    border: 1px solid #ccc;
-    font-size: 16px;
-    outline: none;
+
+  /* 追加在你的 CSS 中 */
+select.glass-box {
+    width: 952px;
+    background: rgba(255, 255, 255, 0.6);
+    border: none;
+    padding: 12px 20px;
+    padding-right: 40px;         
+    height: 48px;               
+    line-height: 24px;
+    cursor: pointer;
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    background-size: 12px 8px;
+     /* 去除浏览器默认箭头样式 */
+    /* appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none; */
   }
-  
+
   .input-field::placeholder {
     color: #aaa;
   }
@@ -78,12 +91,12 @@
   
   .worker-table {
     width: 100%;
-    max-width: 700px;
+    max-width: 800px;
     margin-top: 32px;
     background: white;
     border-radius: 12px;
-    padding: 24px;
-    box-shadow: 0px 10px 30px rgba(0,0,0,0.05);
+    padding: 24px 72px;
+    box-shadow: 0px 8px 30px rgba(99, 140, 243, 0.2);
     display: flex;
     flex-direction: column;
     gap: 14px;
@@ -92,7 +105,7 @@
   .table-header, .table-row {
     display: grid;
     grid-template-columns: 1fr 2fr 2fr 1fr 1fr;
-    gap: 12px;
+    gap: 14px;
     align-items: center;
   }
   
@@ -104,11 +117,20 @@
   
   .table-row input[type="time"],
   .table-row input[type="number"] {
-    padding: 8px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
+    height: 48px;
+    width: 150px;
+    text-align: center;
+    /* padding: 8px; */
+    padding-left: 24px;
+    padding-right: 24px;
+    border-radius: 10px;
+    border: none;
     outline: none;
     font-size: 14px;
+    margin: 24px 0;
+    background-color: #F9F9F9;
+    color: #0C0C0C;
+    font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   }
   
   .day-name {
@@ -148,6 +170,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-left: 60px;
   }
   
   .view-form-button {
@@ -164,5 +187,12 @@
     align-items: center;
     max-width: 700px;
     margin-top: 16px;
+    margin-left: 60px;
   }
   
+  .generate-button-wrapper {
+    margin-left: 110px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
