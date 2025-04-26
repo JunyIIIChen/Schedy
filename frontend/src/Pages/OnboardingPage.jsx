@@ -2,8 +2,13 @@ import React, { useState } from 'react';
 import './CSS/OnboardingPage.css';
 import Lottie from 'lottie-react';
 import animationData from '../Component/Assets/Frame-2087326994.json';
+import threeStars from '../Component/Assets/three_stars.svg';
+import { LinkGenerator } from '../Component/LinkGenerator/LinkGenerator';
 
 const OnboardingPage = () => {
+    const [scheduleId, setScheduleId] = useState('')
+    
+
   const [step, setStep] = useState(1);
   const [industry, setIndustry] = useState('');
   const [workerConfig, setWorkerConfig] = useState({
@@ -29,10 +34,14 @@ const OnboardingPage = () => {
   };
 
   return (
-    <div className="onboarding-container">
+      <div className="onboarding-container">
+          <div className="onboarding-svg-icon">
+        <img src={threeStars} alt="" />
+          </div>
+          <h2 className="onboarding-title">Welcome onboard!</h2>
       {step === 1 && (
         <>
-          <h2 className="onboarding-title">Welcome onboard!</h2>
+          
           <div className="lottie-row">
             <Lottie className="lottie-avatar" animationData={animationData} loop={true} />
             <div className="company-info">
@@ -40,7 +49,7 @@ const OnboardingPage = () => {
               <select
                 value={industry}
                 onChange={(e) => setIndustry(e.target.value)}
-                className="glass-box"
+                className="glass-box input-field"
               >
                 <option value="" disabled>
                   What industry best describes your business?
@@ -57,9 +66,11 @@ const OnboardingPage = () => {
         </>
       )}
 
-      {step === 2 && (
+          {step === 2 && (
+            <div className="lottie-row">
+            <Lottie className="lottie-avatar" animationData={animationData} loop={true} />   
         <div className="fade-in">
-          <h3 className="form-title">How many workers do you need during the following hours</h3>
+          <h3 className="glass-box form-title">How many workers do you need during the following hours</h3>
           <div className="worker-table">
             <div className="table-header">
               <span>Day</span><span>Start</span><span>End</span><span>Workers</span><span>Day Off</span>
@@ -98,7 +109,11 @@ const OnboardingPage = () => {
             <button className="back-button" onClick={() => setStep(1)}>← Back</button>
             <button className="next-button" onClick={() => setStep(3)}>Next →</button>
           </div>
-        </div>
+              </div>
+              
+            </div>
+
+
       )}
 
       {step === 3 && (
@@ -118,18 +133,14 @@ const OnboardingPage = () => {
           <div className="lottie-row">
             <Lottie className="lottie-avatar" animationData={animationData} loop={true} />
             <div className="glass-box">
-              Click <strong>Generate</strong> Button to generate the form link, and send it to your employees.
+                          Click Generate Button to generate the form link, and send it to your employees.
+                          <div className="generate-button-wrapper">
+                            <LinkGenerator  onScheduleGenerated={setScheduleId} />
+                          </div>
             </div>
           </div>
 
-          <div className="form-link-box">
-            <input
-              className="glass-box"
-              disabled
-              placeholder="Click Generate Button to generate the form link"
-            />
-            <button className="next-button">Generate →</button>
-          </div>
+
 
           <div className="button-row">
             <button className="back-button" onClick={() => setStep(2)}>← Back</button>
