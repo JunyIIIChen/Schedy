@@ -43,14 +43,14 @@ export const LinkGenerator = ({ onScheduleGenerated }) => {
     <div>
       <button className= "gradient-button" onClick={handleGenerateLink}>Generate</button>
 
-      {link && (
+      {/* {link && (
         <div style={{ marginTop: "10px" }}>
           <p>Share this link with employees:</p>
           <a href={link} target="_blank" rel="noreferrer">{link}</a>
         </div>
       )}
 
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {error && <p style={{ color: 'red' }}>{error}</p>} */}
     </div>
   )
 }

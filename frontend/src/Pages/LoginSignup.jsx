@@ -48,7 +48,7 @@ const LoginSignup = () => {
 
       if (dataObj.success) {
         localStorage.setItem('auth-token',dataObj.token);
-        window.location.replace("/");
+        window.location.replace("/OnboardingPage");
       }
       else
       {
