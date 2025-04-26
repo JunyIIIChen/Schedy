@@ -257,7 +257,7 @@ const EventCalendar = () => {
                     </Form>
                 </Modal>
 
-                <bubtton
+                <button
                     type="primary"
                     className="save-btn"
                     style={{marginTop: '20px'}}
@@ -268,7 +268,7 @@ const EventCalendar = () => {
                     }}
                 >
                     Add New Schedule
-                </bubtton>
+                </button>
 
                 <button onClick={new_schedule} className="save-btn">
                     Genrate New Schedule
