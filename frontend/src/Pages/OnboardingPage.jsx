@@ -92,8 +92,8 @@ const OnboardingPage = () => {
       if (updateRes.ok && updateData.success) {
         alert('Information saved successfully!');
         setTimeout(() => {
-          window.location.href = '/'; // 保存后跳转首页
-        }, 2000);
+          window.location.href = '/homepage'; // 保存后跳转首页
+        }, 1000);
       } else {
         alert(updateData.message || 'Save failed');
         setSaving(false);
