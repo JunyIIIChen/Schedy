@@ -141,30 +141,54 @@ select.glass-box {
 
   .button-row {
     display: flex;
-    justify-content: space-between;
-    max-width: 700px;
-    margin-top: 32px;
+    justify-content: space-between; /* 两边顶着 */
+    align-items: center;             /* 上下居中 */
+    width: 100%;
+    max-width: 912px;                /* 跟你的glass-box宽度对齐 */
+    margin: 32px auto;             /* 顶部有间距，左右居中 */
+    /* padding: 0 0px; */
+    box-sizing: border-box;
   }
   
   .back-button,
   .next-button {
-    padding: 10px 20px;
-    font-size: 16px;
-    border-radius: 10px;
-    border: none;
+    all: unset; /* 去除所有默认按钮样式 */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  
+    height: 36px;
+    padding: 0 30px;
+    border-radius: 12px;
+    background: linear-gradient(270deg, #0ACFFE, #495AFF, #0ACFFE);
+    background-size: 600% 600%;
+    color: white;
+    font-weight: 600;
+    font-size: 14px;
+    font-family: 'Montserrat', sans-serif;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.4s ease;
+
   }
+
+  .next-button:hover {
+    animation: gradientMove 3s ease infinite;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+  }
+
+  .first-step{
+    justify-content: flex-end;
+  }
+  
+
   
   .back-button {
     background: #f0f0f0;
     color: #333;
   }
   
-  .next-button {
-    background: #446fff;
-    color: white;
-  }
   
   .view-form-box {
     display: flex;
@@ -196,3 +220,60 @@ select.glass-box {
     align-items: center;
     justify-content: center;
   }
+
+.generated-link-box{
+    margin-left: 60px;
+  }
+
+  .generated-link-box {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 20px;
+    position: relative;
+  }
+  
+  .link-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    word-break: break-all;
+  }
+  
+  .copy-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .copy-success {
+    color: green;
+    font-size: 12px;
+    margin-top: 5px;
+  }
+
+  .congrats-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    /* min-height: 80vh; */
+    text-align: center;
+    padding: 40px;
+  }
+  
+  .congrats-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #111;
+    margin-top: 24px;
+    margin-bottom: 16px;
+  }
+  
+  .congrats-text {
+    font-size: 16px;
+    max-width: 600px;
+    color: #444;
+    margin-bottom: 32px;
+  }
+  
