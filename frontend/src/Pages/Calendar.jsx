@@ -5,6 +5,7 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import {Modal, Button, Form, Input, Spin} from 'antd';
 import {Link, useNavigate} from 'react-router-dom';
 import ai_icon from "../Component/Assets/AI.png";
+import { useLocation } from 'react-router-dom';
 
 const localizer = momentLocalizer(moment);
 
@@ -16,9 +17,15 @@ const EventCalendar = () => {
         const [form] = Form.useForm();
         const [userData, setUserData] = useState(null);
         const [error, setError] = useState('')
+        const location = useLocation();
+        const searchParams = new URLSearchParams(location.search);
 
 
         useEffect(() => {
+
+            if (searchParams.get('action') === 'new_schedule') {
+                new_schedule();
+            }
             const load_user_information = async () => {
                 const token = localStorage.getItem("auth-token");
 
@@ -63,7 +70,7 @@ const EventCalendar = () => {
 
             load_user_information();
 
-        }, []);
+        }, [location.search]);
 
         const handleSelectEvent = (event) => {
             setSelectedEvent(event);
