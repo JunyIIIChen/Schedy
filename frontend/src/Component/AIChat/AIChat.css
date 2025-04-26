@@ -1,107 +1,118 @@
-.ai-chat-container {
-    width: 100%;
-    max-width: 800px;
-    margin: 0 auto;
-    border-radius: 10px;
-    background: #fefefe;
-    padding: 20px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  }
-  
-  .ai-chat-header {
-    font-size: 18px;
-    font-weight: bold;
-    margin-bottom: 10px;
-  }
-  
-  .ai-chat-messages {
-    max-height: 300px;
-    overflow-y: auto;
-    margin-bottom: 15px;
-    background: #fafafa;
-    border-radius: 6px;
-    padding: 10px;
-  }
-  
-  .ai-message {
-    margin-bottom: 10px;
-  }
-  
-  .ai-message.user {
-    text-align: right;
-  }
-  
-  .ai-message.ai {
-    text-align: left;
-  }
-  
-  .ai-message-content {
-    display: inline-block;
-    padding: 10px 14px;
-    border-radius: 10px;
-    background: #e6f2ff;
-    max-width: 80%;
-    white-space: pre-wrap;
-  }
-  
-  .ai-message.user .ai-message-content {
-    background: #cce5ff;
-  }
-  
-  .ai-loading {
-    color: #888;
-    font-style: italic;
-    margin-top: 10px;
-  }
-  
-  .ai-chat-textarea {
-    width: 100%;
-    padding: 10px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    margin-bottom: 10px;
-    resize: vertical;
-  }
-  
-  .ai-chat-send-button {
-    width: 100%;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 12px;
-    border-radius: 6px;
-    font-size: 16px;
-    cursor: pointer;
-  }
-  
-  .ai-chat-send-button:disabled {
-    background-color: #cccccc;
-    cursor: not-allowed;
-  }
-  
-  .ai-schedule-table {
-    margin-top: 30px;
-    background: #fff;
-    border-radius: 8px;
-    padding: 10px;
-    border: 1px solid #ccc;
-  }
-  
-  .ai-schedule-table table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  .ai-schedule-table th,
-  .ai-schedule-table td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: center;
-  }
-  
-  .ai-schedule-table th {
-    background-color: #f3f3f3;
-  }
+.ai-chat-wrapper {
+  width: 100%;
+  min-height: 70vh;
+  /* background: linear-gradient(180deg, #f8faff 0%, #e8f0ff 100%); */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+  /* 删掉flex:1 不要撑爆 */
+}
 
-  
-  
+/* 聊天区域 */
+.ai-chat-messages {
+  flex: 1;
+  margin: 0 25px;
+  width: 100%;
+  max-width: 800px;
+  padding-top: 10px; /* 👈 从40px减小到10px */
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  overflow-y: auto;
+  max-height: calc(100vh - 200px); /* 保证不会太高，200px是顶部和输入区大概占的空间 */
+}
+
+/* 单条消息 */
+.ai-message-box {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-radius: 16px;
+  padding: 10px 10px;
+  margin: 0 25px;
+  box-shadow: 0px 8px 30px rgba(99, 140, 243, 0.2);
+}
+
+/* AI头像 */
+.avatar-wrapper {
+  width: 48px;
+  height: 48px;
+  /* background: radial-gradient(circle at center, #c7d2fe 0%, #e0e7ff 60%, transparent 80%); */
+  border-radius: 50%;
+  margin-right: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+}
+
+/* 消息内容 */
+.message-content {
+  font-size: 16px;
+  color: #111;
+  flex: 1;
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+
+/* 输入区 */
+.ai-chat-input-area {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 730px;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 24px;
+  padding: 8px 16px;
+  box-shadow: 0px 8px 30px rgba(99, 140, 243, 0.2);
+  margin-top: 12px; /* 👈 原来是24px，减半了 */
+}
+
+
+.ai-chat-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 16px;
+  padding: 8px 12px;
+  color: #333;
+  font-family: 'Montserrat', sans-serif;
+}
+
+/* 飞机按钮基础样式 */
+.send-button {
+  background: linear-gradient(90deg, #0ACFFE, #495AFF);
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+
+/* View Calendar按钮 */
+.view-calendar-button {
+  margin-top: 24px;
+  background: linear-gradient(90deg, #0ACFFE, #495AFF);
+  border: none;
+  padding: 12px 24px;
+  border-radius: 24px;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
