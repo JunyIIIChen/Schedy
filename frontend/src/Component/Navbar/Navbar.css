@@ -38,8 +38,8 @@
   align-items: center;
   gap: 10px;
   cursor: pointer;
-  justify-self: center;
-  grid-column: 2;
+  /*justify-self: center;*/
+  /*grid-column: 2;*/
 }
 
 .nav-logo img {

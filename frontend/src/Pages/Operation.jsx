@@ -95,8 +95,6 @@ export const Operation = () => {
 
     const saveToSQL = async (index) => {
         userData.rows = rows;
-        console.log(userData)
-
         try {
             const token = localStorage.getItem("auth-token");
             if (!token) {

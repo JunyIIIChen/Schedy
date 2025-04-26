@@ -89,6 +89,20 @@ transform: rotate(15deg);
   font-weight: 500;
   cursor: pointer;
 }
+.calendar-btn{
+  width: 220px;
+  height: 36px;
+  border-radius: 32px;
+  padding: 0 30px;
+  gap: 6px;
+  border: 1px solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: inherit; /* 保持文字颜色与父元素一致 */
+}
+
 .LandingPage-latest-btn img{
   width: 18px;
 }

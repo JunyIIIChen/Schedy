@@ -3,6 +3,8 @@ import {Calendar, momentLocalizer} from 'react-big-calendar';
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import {Modal, Button, Form, Input, Spin} from 'antd';
+import {Link, useNavigate} from 'react-router-dom';
+import ai_icon from "../Component/Assets/AI.png";
 
 const localizer = momentLocalizer(moment);
 
@@ -14,6 +16,7 @@ const EventCalendar = () => {
         const [form] = Form.useForm();
         const [userData, setUserData] = useState(null);
         const [error, setError] = useState('')
+
 
         useEffect(() => {
             const load_user_information = async () => {
@@ -187,7 +190,7 @@ const EventCalendar = () => {
                 // const eventsData = Array.isArray(data.answer[0]) ? data.answer[0] : data.answer.slice(0, 14);
 
                 // Transform the backend data to match the calendar's expected format
-                const formattedEvents = data.map(event => ({
+                const formattedEvents = data.calendar_json.map(event => ({
                     id: event.id,
                     start: new Date(event['start']),
                     end: new Date(event['end']),
@@ -213,7 +216,7 @@ const EventCalendar = () => {
         }
 
         return (
-            <div style={{height: '700px', padding: '20px 180px'}}>
+            <div style={{height: '700px', padding: '50px 180px'}}>
                 <Calendar
                     localizer={localizer}
                     events={events}
@@ -221,8 +224,18 @@ const EventCalendar = () => {
                     endAccessor="end"
                     onSelectEvent={handleSelectEvent}
                     selectable
+                    onSelectSlot={(slotInfo) => {
+                        setSelectedEvent(null);
+                        form.resetFields();
+                        form.setFieldsValue({
+                            start: slotInfo.start,
+                            end: slotInfo.end,
+                        });
+                        setVisible(true);
+                    }}
                     eventPropGetter={eventStyleGetter}
                     defaultView="week"
+                    defaultDate={new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)}
                     components={{
                         event: ({event}) => (
                             <div>
@@ -257,26 +270,37 @@ const EventCalendar = () => {
                     </Form>
                 </Modal>
 
-                <button
-                    type="primary"
-                    className="save-btn"
-                    style={{marginTop: '20px'}}
-                    onClick={() => {
-                        setSelectedEvent(null);
-                        form.resetFields();
-                        setVisible(true);
-                    }}
-                >
-                    Add New Schedule
-                </button>
+                {/*<button*/}
+                {/*    type="primary"*/}
+                {/*    className="save-btn"*/}
+                {/*    style={{marginTop: '20px'}}*/}
+                {/*    onClick={() => {*/}
+                {/*        setSelectedEvent(null);*/}
+                {/*        form.resetFields();*/}
+                {/*        setVisible(true);*/}
+                {/*    }}*/}
+                {/*>*/}
+                {/*    Add New Schedule*/}
+                {/*</button>*/}
 
-                <button onClick={new_schedule} className="save-btn">
-                    Genrate New Schedule
-                </button>
+                {/*<button onClick={new_schedule} className="save-btn">*/}
+                {/*    Genrate New Schedule*/}
+                {/*</button>*/}
+                <div style={{padding: "20px", gap: "20px", display: "flex", justifyContent: "flex-end"}}>
+                    <Link to="/homepage" style={{textDecoration: 'none',}}>
+                        <div className="calendar-btn">
+                            <img src={ai_icon} alt="" className="ai_icon"/>
+                            <span>Talk with AI</span>
 
-                <button onClick={saveToSQL} className="save-btn">
-                    Save
-                </button>
+                        </div>
+                    </Link>
+
+                    <button onClick={saveToSQL} className="gradient-button">
+                        Save
+                    </button>
+
+                </div>
+
             </div>
         );
     }
