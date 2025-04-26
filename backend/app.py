@@ -481,9 +481,9 @@ Return only a valid JSON array like:
     extracted = extract_all_json(content)
 
     return jsonify({
-        "calendar_json": extracted,
-        "raw": content,
-        "availabilities_count": len(availability_data)
+        "calendar_json": extracted
+        # "raw": content,
+        # "availabilities_count": len(availability_data)
     })
 
 
