@@ -13,7 +13,7 @@ const EventCalendar = () => {
         const [selectedEvent, setSelectedEvent] = useState(null);
         const [form] = Form.useForm();
         const [userData, setUserData] = useState(null);
-        const [error, setError] = useState('');
+        const [error, setError] = useState('')
 
         useEffect(() => {
             const load_user_information = async () => {
@@ -174,8 +174,12 @@ const EventCalendar = () => {
         const new_schedule = async (index) => {
             setLoading(true);
             try {
-                const response = await fetch('http://localhost:5001/ask');
-                const data = await response.json();
+                const res = await fetch('http://localhost:5001/api/view-calendar', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({schedule_id: "8c8580f7-856e-4343-9025-3ba7946224fc"}),
+                });
+                const data = await res.json();
                 console.log(data)
                 // Extract the events array from the response
                 // The data structure shows events are in data.answer[0] to data.answer[13]
@@ -209,7 +213,7 @@ const EventCalendar = () => {
         }
 
         return (
-            <div style={{height: '700px', padding: '20px'}}>
+            <div style={{height: '700px', padding: '20px 180px'}}>
                 <Calendar
                     localizer={localizer}
                     events={events}
@@ -253,8 +257,9 @@ const EventCalendar = () => {
                     </Form>
                 </Modal>
 
-                <Button
+                <bubtton
                     type="primary"
+                    className="save-btn"
                     style={{marginTop: '20px'}}
                     onClick={() => {
                         setSelectedEvent(null);
@@ -263,7 +268,7 @@ const EventCalendar = () => {
                     }}
                 >
                     Add New Schedule
-                </Button>
+                </bubtton>
 
                 <button onClick={new_schedule} className="save-btn">
                     Genrate New Schedule
