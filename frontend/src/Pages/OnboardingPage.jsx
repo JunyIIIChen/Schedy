@@ -10,7 +10,8 @@ const OnboardingPage = () => {
   const [scheduleId, setScheduleId] = useState('');
   const [step, setStep] = useState(1);
   const [industry, setIndustry] = useState('');
-  const [copySuccess, setCopySuccess] = useState(false);
+    const [copySuccess, setCopySuccess] = useState(false);
+    const [saving, setSaving] = useState(false);  
 
   const [workerConfig, setWorkerConfig] = useState({
     monday: { start: "08:00", end: "19:00", workers: 3, dayOff: false },
@@ -41,6 +42,69 @@ const OnboardingPage = () => {
       setTimeout(() => setCopySuccess(false), 2000);
     });
   };
+    
+  const handleSubmit = async () => {
+    setSaving(true);
+  
+    try {
+      const token = localStorage.getItem('auth-token');
+      if (!token) {
+        alert('No token found, please login again.');
+        setSaving(false);
+        return;
+      }
+  
+      // 1. 先拿当前用户完整信息
+      const basicRes = await fetch('http://localhost:5001/api/basic', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+  
+      const basicData = await basicRes.json();
+      if (!basicRes.ok || !basicData || !basicData._id || !basicData._id.$oid) {
+        alert('Failed to fetch user information.');
+        setSaving(false);
+        return;
+      }
+  
+      const userId = basicData._id.$oid; // ✅ 注意是 _id.$oid
+  
+      // 2. 更新industry 和 workerConfig
+      const updateRes = await fetch('http://localhost:5001/api/update_user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          updates: {
+            _id: { "$oid": userId },
+            industry: industry,
+            workerConfig: workerConfig,
+          },
+        }),
+      });
+  
+      const updateData = await updateRes.json();
+      if (updateRes.ok && updateData.success) {
+        alert('Information saved successfully!');
+        setTimeout(() => {
+          window.location.href = '/'; // 保存后跳转首页
+        }, 2000);
+      } else {
+        alert(updateData.message || 'Save failed');
+        setSaving(false);
+      }
+    } catch (error) {
+      console.error('Error during saving user info', error);
+      alert('Something went wrong.');
+      setSaving(false);
+    }
+  };
+  
 
   return (
     <div className="onboarding-container">
@@ -188,7 +252,7 @@ const OnboardingPage = () => {
           <p className="congrats-text">
             We're excited to have you on board! Share this link with your team, and let our smart AI handle the rest. Your custom work schedule will be ready soon — exciting things are coming!
           </p>
-          <button className="next-button">Got it</button>
+          <button className="next-button" onClick={handleSubmit}>Got it</button>
         </div>
       )}
     </div>
