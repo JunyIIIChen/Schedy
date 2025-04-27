@@ -252,9 +252,9 @@ export const Operation = () => {
                         ))}
                     </div>
 
-                    <button onClick={addNewRow} className="add-row-btn">
-                        Add New Schedule
-                    </button>
+                            {/* <button onClick={addNewRow} className="add-row-btn">
+                                Add New Schedule
+                            </button>` */}
                 </div>
             </div>
         </div>

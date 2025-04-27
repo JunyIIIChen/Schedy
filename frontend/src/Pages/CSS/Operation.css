@@ -94,10 +94,34 @@ button {
 }
 
 .save-btn {
-  background-color: #7E5CFF;
-  color: white;
-  text-align: right;
-  wdith:87px;
-  height: 42px;
+  all: unset; /* 去除所有默认按钮样式 */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  
+    height: 36px;
+    padding: 0 30px;
+    border-radius: 12px;
+    background: linear-gradient(270deg, #0ACFFE, #495AFF, #0ACFFE);
+    background-size: 600% 600%;
+    color: white;
+    font-weight: 600;
+    font-size: 14px;
+    font-family: 'Montserrat', sans-serif;
+    cursor: pointer;
+    transition: all 0.4s ease;
 
+}
+
+.save-btn:hover {
+  animation: gradientMove 3s ease infinite;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+}
+
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }

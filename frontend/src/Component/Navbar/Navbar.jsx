@@ -15,9 +15,11 @@ export const Navbar = () => {
             </Link>
 
             <div className='nav-menu'>
-                <Link to="/homepage" className='nav-menu-item'>
-                    Chat with AI
-                </Link>
+                {isLoggedIn && (
+                    <Link to="/homepage" className='nav-menu-item'>
+                        Chat with AI
+                    </Link>
+                )}
 
                 {isLoggedIn && (
                     <Link to="/calendar" className='nav-menu-item'>

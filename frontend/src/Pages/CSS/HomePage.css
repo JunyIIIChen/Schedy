@@ -1,0 +1,51 @@
+.home-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+  }
+  
+  /* 生成按钮区域 */
+  .generate-button-wrapper {
+    margin-bottom: 24px;
+  }
+  
+  /* 统一的毛玻璃盒子样式 */
+  .glass-box {
+    display: flex;
+    width: 912px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.6);
+    box-shadow: 0px 8px 30px rgba(99, 140, 243, 0.2);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    font-size: 16px;
+    font-weight: 500;
+    color: #111;
+  }
+  
+  /* 生成的链接内容排版 */
+  .link-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    word-break: break-all;
+    width: 100%;
+  }
+  
+  /* 小复制按钮 */
+  .copy-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  
+  /* 复制成功提示 */
+  .copy-success {
+    color: green;
+    font-size: 12px;
+    margin-top: 5px;
+  }
+  
