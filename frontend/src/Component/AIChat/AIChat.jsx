@@ -1,12 +1,13 @@
+// src/Component/AIChat/AIChat.jsx
 import React, { useEffect, useRef, useState } from 'react';
-import ReactMarkdown from 'react-markdown';
 import Lottie from 'lottie-react';
-import animationData from '../Assets/Frame-2087326994.json'; 
-import { Send } from 'lucide-react'; // 飞机icon
+import animationData from '../Assets/Frame-2087326994.json';
+import { Send } from 'lucide-react';
 import './AIChat.css';
 import { useNavigate } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
 
-export const AIChat = ({ scheduleId }) => {
+export const AIChat = () => {
   const [messages, setMessages] = useState([
     { sender: 'ai', text: 'Tell me your requirement on scheduling' }
   ]);
@@ -14,7 +15,6 @@ export const AIChat = ({ scheduleId }) => {
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef(null);
   const typingIntervalRef = useRef(null);
-
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -22,6 +22,11 @@ export const AIChat = ({ scheduleId }) => {
   }, [messages]);
 
   const sendMessage = async () => {
+    const scheduleId = localStorage.getItem('schedule-id');
+    if (!scheduleId) {
+      alert('No schedule ID found. Please generate a link first.');
+      return;
+    }
     if (!input.trim()) return;
 
     const userMsg = { sender: 'user', text: input };
@@ -34,7 +39,7 @@ export const AIChat = ({ scheduleId }) => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          schedule_id: scheduleId || "demo-schedule-id",
+          schedule_id: scheduleId,
           message: input,
         }),
       });
@@ -125,11 +130,10 @@ export const AIChat = ({ scheduleId }) => {
         >
           <Send size={20} />
         </button>
-
       </div>
 
       <button onClick={handleViewCalendar} className="view-calendar-button">
-        View Your Calendar
+        📅 View Your Calendar
       </button>
     </div>
   );
