@@ -50,16 +50,21 @@ const EventCalendar = () => {
       const data = await res.json();
       setUserData(data);
 
-      if (data.events?.length > 0) {
-        setEvents(
-          data.events.map(event => ({
-            id: event.id,
-            start: new Date(event.start),
-            end: new Date(event.end),
-            employee: event.employee,
-            email: event.email,
-          }))
-        );
+      if (data.events) {
+        const scheduleId = localStorage.getItem('schedule-id');
+        if (scheduleId && data.events[scheduleId]) {
+          setEvents(
+            data.events[scheduleId].map(event => ({
+              id: event.id,
+              start: new Date(event.start),
+              end: new Date(event.end),
+              employee: event.employee,
+              email: event.email,
+            }))
+          );
+        } else {
+          setEvents([]);
+        }
       }
 
     } catch (err) {
@@ -122,13 +127,13 @@ const EventCalendar = () => {
     const color = getEmployeeColor(event.employee);
     return {
       style: {
-        backgroundColor: `${color}20`, 
+        backgroundColor: `${color}20`,
         borderLeft: `4px solid ${color}`,
-        borderRadius: '0px',   // ❌取消圆角
+        borderRadius: '0px',
         color: '#111',
-        fontSize: '12px',      // ✨ 小字体
+        fontSize: '12px',
         padding: '4px',
-        fontWeight: '400',     // ❌取消加粗
+        fontWeight: '400',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
@@ -137,12 +142,22 @@ const EventCalendar = () => {
     };
   };
 
-  const saveToSQL = async () => {
-    const eventsWithISOString = events.map(event => ({
-      ...event,
-      start: event.start.toISOString(),
-      end: event.end.toISOString(),
-    }));
+  const saveToDB = async () => {
+    const scheduleId = localStorage.getItem('schedule-id');
+    if (!scheduleId) {
+      alert('No schedule-id found in localStorage. Please generate one.');
+      return;
+    }
+
+    const eventsBySchedule = {
+      [scheduleId]: events.map(event => ({
+        id: event.id,
+        start: event.start.toISOString(),
+        end: event.end.toISOString(),
+        employee: event.employee,
+        email: event.email,
+      }))
+    };
 
     const token = localStorage.getItem("auth-token");
     if (!token) {
@@ -160,7 +175,7 @@ const EventCalendar = () => {
         body: JSON.stringify({
           updates: {
             _id: {"$oid": userData._id.$oid},
-            events: eventsWithISOString,
+            events: eventsBySchedule
           }
         }),
       });
@@ -200,6 +215,13 @@ const EventCalendar = () => {
       }));
 
       setEvents(formattedEvents);
+      setUserData(prev => ({
+        ...prev,
+        events: {
+          ...(prev?.events || {}),
+          [scheduleId]: formattedEvents
+        }
+      }));
       setLoading(false);
     } catch (error) {
       console.error('Error fetching events:', error);
@@ -216,7 +238,7 @@ const EventCalendar = () => {
   }
 
   return (
-    <div style={{height: '750px', padding: '50px 120px'}}> {/* ✨ 调高日历高度！ */}
+    <div style={{height: '750px', padding: '50px 120px'}}>
       <DragAndDropCalendar
         localizer={localizer}
         events={events}
@@ -245,7 +267,7 @@ const EventCalendar = () => {
               whiteSpace: 'pre-wrap', 
               textAlign: 'left', 
               paddingLeft: '4px',
-              fontSize: '12px', // 小字体
+              fontSize: '12px',
               overflowWrap: 'break-word'
             }}>
               {event.employee}
@@ -265,18 +287,10 @@ const EventCalendar = () => {
         cancelText="Cancel"
       >
         <Form form={form} layout="vertical">
-          <Form.Item name="employee" label="Employee Name" rules={[{required: true}]}>
-            <Input />
-          </Form.Item>
-          <Form.Item name="email" label="Email" rules={[{type: 'email', required: true}]}>
-            <Input />
-          </Form.Item>
-          <Form.Item name="start" label="Start Time" rules={[{required: true}]}>
-            <Input type="datetime-local" />
-          </Form.Item>
-          <Form.Item name="end" label="End Time" rules={[{required: true}]}>
-            <Input type="datetime-local" />
-          </Form.Item>
+          <Form.Item name="employee" label="Employee Name" rules={[{required: true}]}> <Input /> </Form.Item>
+          <Form.Item name="email" label="Email" rules={[{type: 'email', required: true}]}> <Input /> </Form.Item>
+          <Form.Item name="start" label="Start Time" rules={[{required: true}]}> <Input type="datetime-local" /> </Form.Item>
+          <Form.Item name="end" label="End Time" rules={[{required: true}]}> <Input type="datetime-local" /> </Form.Item>
         </Form>
       </Modal>
 
@@ -287,10 +301,7 @@ const EventCalendar = () => {
             <span>Talk with AI</span>
           </div>
         </Link>
-
-        <button onClick={saveToSQL} className="gradient-button">
-          Save
-        </button>
+        <button onClick={saveToDB} className="gradient-button"> Save </button>
       </div>
     </div>
   );
