@@ -75,6 +75,7 @@ const EventCalendar = () => {
 
   const handleSelectEvent = (event) => {
     setSelectedEvent(event);
+    // console.log(event.employee)
     form.setFieldsValue({
       employee: event.employee,
       email: event.email,
@@ -247,9 +248,9 @@ const EventCalendar = () => {
         events={events}
         startAccessor="start"
         endAccessor="end"
+        onSelectEvent={handleSelectEvent}
         selectable
         resizable
-        onSelectEvent={handleSelectEvent}
         onSelectSlot={(slotInfo) => {
           setSelectedEvent(null);
           form.resetFields();
@@ -266,9 +267,9 @@ const EventCalendar = () => {
         defaultDate={new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)}
         components={{
           event: ({ event }) => (
-            <div style={{ 
-              whiteSpace: 'pre-wrap', 
-              textAlign: 'left', 
+            <div style={{
+              whiteSpace: 'pre-wrap',
+              textAlign: 'left',
               paddingLeft: '4px',
               fontSize: '12px',
               overflowWrap: 'break-word'
@@ -282,18 +283,26 @@ const EventCalendar = () => {
       />
 
       <Modal
-        title={selectedEvent ? "Edit Event" : "Add New Schedule"}
-        open={visible}
+        title={selectedEvent ? "Edit Schedule" : "Add New Schedule"}
+        visible={visible}
         onOk={handleSubmit}
         onCancel={() => setVisible(false)}
         okText="Save"
         cancelText="Cancel"
       >
         <Form form={form} layout="vertical">
-          <Form.Item name="employee" label="Employee Name" rules={[{required: true}]}> <Input /> </Form.Item>
-          <Form.Item name="email" label="Email" rules={[{type: 'email', required: true}]}> <Input /> </Form.Item>
-          <Form.Item name="start" label="Start Time" rules={[{required: true}]}> <Input type="datetime-local" /> </Form.Item>
-          <Form.Item name="end" label="End Time" rules={[{required: true}]}> <Input type="datetime-local" /> </Form.Item>
+          <Form.Item name="employee" label="Employee Name" rules={[{required: true}]}>
+              <Input />
+          </Form.Item>
+          <Form.Item name="email" label="Email" rules={[{type: 'email', required: true}]}>
+              <Input />
+          </Form.Item>
+          <Form.Item name="start" label="Start Time" rules={[{required: true}]}>
+              <Input type="datetime-local" />
+          </Form.Item>
+          <Form.Item name="end" label="End Time" rules={[{required: true}]}>
+              <Input type="datetime-local" />
+          </Form.Item>
         </Form>
       </Modal>
 
