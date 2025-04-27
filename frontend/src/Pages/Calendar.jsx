@@ -202,7 +202,10 @@ const EventCalendar = () => {
       const res = await fetch('http://localhost:5001/api/view-calendar', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ schedule_id: scheduleId }),
+        body: JSON.stringify({
+          // schedule_id: scheduleId
+          schedule_id: "2afa5cf6-1051-4aca-ae1b-7c03b7d0475a",
+        }),
       });
       const data = await res.json();
 
