@@ -26,6 +26,9 @@ export const LinkGenerator = ({ onScheduleGenerated }) => {
 
       const scheduleId = data.schedule_id;
       onScheduleGenerated(scheduleId);
+
+      localStorage.setItem('schedule-id', scheduleId); // ✅ 加这一行保存
+
       setError('');
     } catch (err) {
       setError("Something went wrong");

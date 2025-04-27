@@ -1,18 +1,28 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { LinkGenerator } from './../Component/LinkGenerator/LinkGenerator.jsx';
 import { AIChat } from '../Component/AIChat/AIChat.jsx';
-import { Copy } from 'lucide-react'; // 加复制icon
-import './CSS/HomePage.css'; // 新建一个HomePage.css 来放样式
+import { Copy } from 'lucide-react';
+import './CSS/HomePage.css';
 
 export const HomePage = () => {
   const [scheduleId, setScheduleId] = useState('');
   const [generatedLink, setGeneratedLink] = useState('');
   const [copySuccess, setCopySuccess] = useState(false);
 
+  useEffect(() => {
+    // 👇 页面打开时读 localStorage
+    const savedScheduleId = localStorage.getItem('schedule-id');
+    if (savedScheduleId) {
+      setScheduleId(savedScheduleId);
+      setGeneratedLink(`${window.location.origin}/availability?sid=${savedScheduleId}`);
+    }
+  }, []);
+
   const handleScheduleGenerated = (id) => {
     setScheduleId(id);
     const link = `${window.location.origin}/availability?sid=${id}`;
     setGeneratedLink(link);
+    localStorage.setItem('schedule-id', id); // ✅ 保存新的
   };
 
   const handleCopyLink = () => {
@@ -24,13 +34,10 @@ export const HomePage = () => {
 
   return (
     <div className="home-container">
-
-      {/* 生成按钮 */}
-      <div className="generate-button-wrapper">
+      <div className="generate-button-wrapper-home">
         <LinkGenerator onScheduleGenerated={handleScheduleGenerated} />
       </div>
 
-      {/* 生成后的链接显示 */}
       {generatedLink && (
         <div className="glass-box generated-link-box">
           <div className="link-content">
@@ -48,9 +55,7 @@ export const HomePage = () => {
         </div>
       )}
 
-      {/* 聊天界面 */}
-      <AIChat scheduleId={scheduleId} />
-
+      <AIChat key={scheduleId} scheduleId={scheduleId} />
     </div>
   );
 };

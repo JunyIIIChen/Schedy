@@ -129,7 +129,7 @@ export const AIChat = ({ scheduleId }) => {
       </div>
 
       <button onClick={handleViewCalendar} className="view-calendar-button">
-        📅 View Your Calendar
+        View Your Calendar
       </button>
     </div>
   );

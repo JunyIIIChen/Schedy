@@ -5,11 +5,10 @@
     padding: 40px 20px;
   }
   
-  /* 生成按钮区域 */
-  .generate-button-wrapper {
-    margin-bottom: 24px;
+  .generate-button-wrapper-home{
+    margin:0 0 20px 0
   }
-  
+
   /* 统一的毛玻璃盒子样式 */
   .glass-box {
     display: flex;

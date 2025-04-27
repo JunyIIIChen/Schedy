@@ -45,7 +45,7 @@
   font-size: 16px; /* comfortable reading size */
   border: 1px solid #ccc; /* subtle border */
   outline: none; /* removes default focus outline */
-  font-family: Arial, sans-serif; /* clean font */
+  padding-left: 18px;
 }
 
 /* Style when input is focused */
