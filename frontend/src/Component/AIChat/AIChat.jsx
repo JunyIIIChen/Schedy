@@ -6,6 +6,7 @@ import { Send } from 'lucide-react';
 import './AIChat.css';
 import { useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
+import ai_icon from "../Assets/AI.png";
 
 export const AIChat = () => {
   const [messages, setMessages] = useState([
@@ -122,7 +123,7 @@ export const AIChat = () => {
         <input
           type="text"
           className="ai-chat-input"
-          placeholder="✨ Please Input"
+          placeholder="✨ Please tell AI your additional requirement scheduling"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
@@ -137,7 +138,8 @@ export const AIChat = () => {
       </div>
 
       <button onClick={handleViewCalendar} className="view-calendar-button">
-        📅 View Your Calendar
+            <img src={ai_icon} alt="AI" className="ai_icon" />
+            <span>Talk with AI</span>
       </button>
     </div>
   );

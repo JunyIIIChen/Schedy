@@ -4,11 +4,38 @@ import {LinkGenerator} from '../Component/LinkGenerator/LinkGenerator.jsx';
 import {AIChat} from '../Component/AIChat/AIChat.jsx';
 import {Copy} from 'lucide-react';
 import './CSS/HomePage.css';
-import { QRCodeSVG } from 'qrcode.react';
+import {QRCodeSVG} from 'qrcode.react';
+import {useRef} from "react";
 
 export const HomePage = () => {
     const [generatedLink, setGeneratedLink] = useState('');
     const [copySuccess, setCopySuccess] = useState(false);
+
+    const qrRef = useRef(null);
+
+    const handleDownload = () => {
+        const svg = qrRef.current.querySelector('svg');
+        const svgData = new XMLSerializer().serializeToString(svg);
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+
+        const img = new Image();
+        img.onload = () => {
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0);
+            const pngFile = canvas.toDataURL('image/png');
+
+            // 创建一个a标签进行下载
+            const downloadLink = document.createElement('a');
+            downloadLink.href = pngFile;
+            downloadLink.download = 'qrcode.png';
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+        };
+        img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+    };
 
     useEffect(() => {
         const scheduleId = localStorage.getItem('schedule-id');
@@ -56,20 +83,36 @@ export const HomePage = () => {
                         </div>
                         <div className="link-section link-button">
                             {generatedLink && (
-                                <div style={{
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    height: '100%'
-                                }}>
+                                <div
+                                    ref={qrRef}
+                                    style={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        height: '100%',
+                                    }}
+                                >
                                     <QRCodeSVG
                                         value={generatedLink}
-                                        size={1024}
+                                        size={300}
                                         level="H"
                                         includeMargin={true}
                                     />
-                                    <p style={{marginTop: '10px', fontSize: '14px'}}>Scan to share</p>
+                                    <button
+                                        onClick={handleDownload}
+                                        style={{
+                                            background: 'none',
+                                            border: 'none',
+                                            padding: 0,
+                                            margin: 0,
+                                            font: 'inherit',
+                                            color: 'inherit',
+                                            cursor: 'pointer'
+                                        }}
+                                    >
+                                        Download
+                                    </button>
                                 </div>
                             )}
                         </div>

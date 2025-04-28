@@ -6,9 +6,12 @@
 
 }
 
+
+
 .generate-button-wrapper-home {
-    margin: 0 0 20px 0;
+  margin-left: auto;
 }
+
 
 .link-content {
     display: flex;
@@ -78,7 +81,7 @@
 }
 
 .link-top {
-    height: 150px;
+    height: 80%;
     /*width: 100%;*/
     display: flex;
     flex-direction: column;
@@ -87,5 +90,5 @@
 
 
 .link-button {
-    height: 100px;
+    height: 150px;
 }
