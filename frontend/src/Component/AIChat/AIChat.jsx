@@ -6,7 +6,7 @@ import { Send } from 'lucide-react';
 import './AIChat.css';
 import { useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
-import ai_icon from "../Assets/AI.png";
+import ai_icon_yellow from "../Assets/yellowai.png";
 
 export const AIChat = () => {
   const [messages, setMessages] = useState([
@@ -138,7 +138,7 @@ export const AIChat = () => {
       </div>
 
       <button onClick={handleViewCalendar} className="view-calendar-button">
-            <img src={ai_icon} alt="AI" className="ai_icon" />
+            <img src={ai_icon_yellow} alt="AI" className="ai_icon_yellow" />
             <span>Talk with AI</span>
       </button>
     </div>

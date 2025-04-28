@@ -6,6 +6,7 @@ import {Copy} from 'lucide-react';
 import './CSS/HomePage.css';
 import {QRCodeSVG} from 'qrcode.react';
 import {useRef} from "react";
+import dl_icon from "../Component/Assets/download.png";
 
 export const HomePage = () => {
     const [generatedLink, setGeneratedLink] = useState('');
@@ -111,7 +112,8 @@ export const HomePage = () => {
                                             cursor: 'pointer'
                                         }}
                                     >
-                                        Download
+                                        <img src={dl_icon} alt="AI" className="dl_icon"/ >
+                                        <span>Download</span>
                                     </button>
                                 </div>
                             )}
