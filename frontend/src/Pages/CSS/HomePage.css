@@ -1,32 +1,98 @@
+/* 页面整体布局 */
 .home-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: 40px 20px;
-
 }
 
-
-
-.generate-button-wrapper-home {
-  margin-left: auto;
+.ai-chat-container {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+    height: auto;
+    box-sizing: border-box;
 }
 
+/* 左边栏整体 */
+.left-sidebar {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* 两块之间的空隙 */
+}
 
+/* 左边栏每块区域 */
+.sidebar-section {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 410px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* 顶部大框 */
+.top-section {
+    height: 584px; /* 固定高度 */
+    justify-content: space-between;
+}
+
+/* 底部小框 */
+.bottom-section {
+    height: 100px; /* 固定高度 */
+    justify-content: center;
+    background-color: #E3EEFF;
+}
+
+/* link展示区 */
+.link-section {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 80%;
+}
+
+/* link上半部分 */
+.link-top {
+    height: 146px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* link二维码部分 */
+.link-button {
+    height: 232px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* link内容布局 */
 .link-content {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    word-break: break-all;
+    word-break: break-word;
     width: 100%;
     margin-bottom: 10px;
 }
 
-/* 小复制按钮 */
-.copy-button {
+/* 小按钮样式 */
+.copy-button, .download-button {
     background: none;
     border: none;
     cursor: pointer;
+    font: inherit;
+    color: inherit;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
 /* 复制成功提示 */
@@ -36,59 +102,67 @@
     margin-top: 5px;
 }
 
-.ai-chat-container {
-    display: flex;
-    gap: 20px;
-    padding: 20px;
-    height: 100vh;
-    box-sizing: border-box;
+/* 下载图标 */
+.dl-icon {
+    width: 20px;
+    height: 20px;
 }
 
-.left-sidebar {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+/* 生成按钮区域 */
+.generate-button-wrapper-home {
+    margin-left: auto;
+}
+.generate-button{
+    margin-right: 20px;  
+}
+/* link生成时间 */
+.generated-time {
+    font-size: 12px;
+    color: #666;
+    margin-top: 8px;
+    text-align: center;
 }
 
-.sidebar-section {
-    background: #fff;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    width: 410px;
+/* availabilities统计展示 */
+.availability-info {
+    padding: 10px;
+    font-size: 14px;
+    color: #444;
+    text-align: center;
 }
 
-.top-section {
-    flex: 4;
+.availability-info {
+    padding: 10px;
+    font-size: 14px;
+    color: #444;
+    text-align: center;
+}
+
+.availability-line {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: 20px;
-    padding: 20px;
-}
-
-.bottom-section {
-    flex: 1;
-}
-
-.link-section {
-    background: #fff;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    width: 80%;
-}
-
-.link-top {
-    height: 80%;
-    /*width: 100%;*/
-    display: flex;
-    flex-direction: column;
     justify-content: center;
+    gap: 8px; /* 图片、数字、文字之间留8px距离 */
+    margin-bottom: 6px;
 }
 
+.alarm-icon {
+    width: 20px;
+    height: 20px;
+}
 
-.link-button {
-    height: 150px;
+.availability-count {
+    font-weight: bold;
+    font-size: 18px;
+    color: #222;
+}
+
+.availability-text {
+    font-size: 14px;
+    color: #444;
+}
+
+.availability-subtext {
+    font-size: 13px;
+    color: #666;
 }

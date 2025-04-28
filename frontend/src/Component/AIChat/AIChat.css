@@ -1,7 +1,6 @@
 .ai-chat-wrapper {
   width: 846px;
-  min-height: 70vh;
-  /* background: linear-gradient(180deg, #f8faff 0%, #e8f0ff 100%); */
+  height: 784px;  /* background: linear-gradient(180deg, #f8faff 0%, #e8f0ff 100%); */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -15,7 +14,7 @@
 /* 聊天区域 */
 .ai-chat-messages {
   flex: 1;
-  margin: 0 25px;
+  margin: 40px 25px 0px 25px;
   width: 100%;
   max-width: 800px;
   padding-top: 10px; /* 👈 从40px减小到10px */
@@ -114,7 +113,7 @@
     align-items: center;
     justify-content: center;
     gap: 6px;
-    margin-top: 24px;
+    margin: 24px 44px;
     height: 36px;
     padding: 0 30px;
     border-radius: 12px;
@@ -126,6 +125,8 @@
     font-family: 'Montserrat', sans-serif;
     cursor: pointer;
     transition: all 0.4s ease;
+    align-self: flex-end;
+    margin-left: auto;
 
 }
 .view-calendar-button:hover {
@@ -133,11 +134,50 @@
   transform: translateY(-2px);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
 }
+/* 公共基础按钮样式 */
+.ai-finish-button {
+  all: unset;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 24px 44px;
+  height: 40px;
+  padding: 0 24px;
+  border-radius: 12px;
+  font-weight: 500;
+  font-size: 15px;
+  line-height: 100%;
+  letter-spacing: 0%;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  align-self: flex-end;
+  margin-left: auto;
+}
 
+/* AI Generate 状态（白底蓝边） */
+.ai-finish-button.generate {
+  background: white;
+  color: #0ACFFE;
+  border: 1px solid #0ACFFE;
+}
 
+/* Finish 状态（实心蓝底） */
+.ai-finish-button.finish {
+  background: linear-gradient(270deg, #0ACFFE, #495AFF);
+  color: white;
+  border: none;
+}
 
-@keyframes gradientMove {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+/* 鼠标悬停效果 */
+.ai-finish-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* AI小图标 */
+.ai_icon_yellow {
+  width: 20px;
+  height: 20px;
 }

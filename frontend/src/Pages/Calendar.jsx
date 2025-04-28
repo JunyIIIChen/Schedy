@@ -242,7 +242,7 @@ const EventCalendar = () => {
   }
 
   return (
-    <div style={{height: '750px', padding: '50px 120px'}}>
+    <div style={{height: '750px', padding: '50px 120px', fontFamily: "'Montserrat', sans-serif"}}>
       <DragAndDropCalendar
         localizer={localizer}
         events={events}
@@ -307,12 +307,12 @@ const EventCalendar = () => {
       </Modal>
 
       <div style={{padding: "20px", gap: "20px", display: "flex", justifyContent: "flex-end"}}>
-        <Link to="/homepage" style={{textDecoration: 'none'}}>
+        {/* <Link to="/homepage" style={{textDecoration: 'none'}}>
           <div className="calendar-btn">
             <img src={ai_icon} alt="AI" className="ai_icon" />
             <span>Talk with AI</span>
           </div>
-        </Link>
+        </Link> */}
         <button onClick={saveToDB} className="gradient-button"> Save </button>
       </div>
     </div>

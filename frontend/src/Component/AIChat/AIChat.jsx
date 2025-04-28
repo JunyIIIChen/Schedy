@@ -24,20 +24,20 @@ export const AIChat = () => {
 
   const sendMessage = async () => {
     if (loading || !input.trim()) return;  // 防止发送中重复触发
-  
+
     const scheduleId = localStorage.getItem('schedule-id');
     if (!scheduleId) {
       alert('No schedule ID found. Please generate a link first.');
       return;
     }
-  
+
     const userMsg = { sender: 'user', text: input };
     setMessages((prev) => [...prev, userMsg]);
-  
+
     setLoading(true);  // 🔥 一进入就锁定loading，禁止后续发送
     const userInput = input; // 🔥 提前保存用户输入
     setInput('');  // 清空input框，防止误发送空白
-  
+
     try {
       const res = await fetch('http://localhost:5001/api/schedule-agent', {
         method: 'POST',
@@ -47,12 +47,12 @@ export const AIChat = () => {
           message: userInput,  // 🔥 保证发送的是保存的输入，而不是被清空后的input
         }),
       });
-  
+
       const data = await res.json();
       const fullText = data.response || '🤖 No response.';
       const aiMsg = { sender: 'ai', text: '' };
       setMessages((prev) => [...prev, aiMsg]);
-  
+
       let i = 0;
       typingIntervalRef.current = setInterval(() => {
         setMessages((prev) => {
@@ -73,7 +73,7 @@ export const AIChat = () => {
           setLoading(false); // 🔥 回复打完了，才解锁发送
         }
       }, 20);
-  
+
     } catch (err) {
       console.error('Request error:', err);
       setMessages((prev) => [...prev, { sender: 'ai', text: '❌ Error, please try again.' }]);
@@ -81,7 +81,7 @@ export const AIChat = () => {
     }
   };
 
-  
+
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -129,7 +129,7 @@ export const AIChat = () => {
           onKeyDown={handleKeyDown}
         />
         <button
-          className={`send-button ${loading ? 'sending' : ''}`} 
+          className={`send-button ${loading ? 'sending' : ''}`}
           onClick={sendMessage}
           disabled={loading}
         >
@@ -137,10 +137,15 @@ export const AIChat = () => {
         </button>
       </div>
 
-      <button onClick={handleViewCalendar} className="view-calendar-button">
-            <img src={ai_icon_yellow} alt="AI" className="ai_icon_yellow" />
-            <span>Talk with AI</span>
+      <button
+        className={`ai-finish-button ${messages.length > 1 ? 'finish' : 'generate'}`}
+        onClick={handleViewCalendar}
+      >
+        <img src={ai_icon_yellow} alt="AI" className="ai_icon_yellow" />
+        <span>{messages.length <= 1 ? 'AI Generate' : 'Finish'}</span>
       </button>
+
+
     </div>
   );
 };
