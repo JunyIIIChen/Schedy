@@ -3,48 +3,89 @@
     flex-direction: column;
     align-items: center;
     padding: 40px 20px;
-  }
-  
-  .generate-button-wrapper-home{
-    margin:0 0 20px 0
-  }
 
-  /* 统一的毛玻璃盒子样式 */
-  .glass-box {
-    display: flex;
-    width: 912px;
-    padding: 16px 20px;
-    margin-bottom: 16px;
-    border-radius: 14px;
-    background: rgba(255, 255, 255, 0.6);
-    box-shadow: 0px 8px 30px rgba(99, 140, 243, 0.2);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    font-size: 16px;
-    font-weight: 500;
-    color: #111;
-  }
-  
-  /* 生成的链接内容排版 */
-  .link-content {
+}
+
+.generate-button-wrapper-home {
+    margin: 0 0 20px 0;
+}
+
+.link-content {
     display: flex;
     justify-content: space-between;
     align-items: center;
     word-break: break-all;
     width: 100%;
-  }
-  
-  /* 小复制按钮 */
-  .copy-button {
+    margin-bottom: 10px;
+}
+
+/* 小复制按钮 */
+.copy-button {
     background: none;
     border: none;
     cursor: pointer;
-  }
-  
-  /* 复制成功提示 */
-  .copy-success {
+}
+
+/* 复制成功提示 */
+.copy-success {
     color: green;
     font-size: 12px;
     margin-top: 5px;
-  }
-  
+}
+
+.ai-chat-container {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+    height: 100vh;
+    box-sizing: border-box;
+}
+
+.left-sidebar {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.sidebar-section {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 410px;
+}
+
+.top-section {
+    flex: 4;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+}
+
+.bottom-section {
+    flex: 1;
+}
+
+.link-section {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 80%;
+}
+
+.link-top {
+    height: 150px;
+    /*width: 100%;*/
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+
+.link-button {
+    height: 100px;
+}
