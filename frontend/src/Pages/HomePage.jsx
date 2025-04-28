@@ -1,17 +1,18 @@
 // src/Pages/HomePage.jsx
-import React, {useEffect, useState} from 'react';
-import {LinkGenerator} from '../Component/LinkGenerator/LinkGenerator.jsx';
-import {AIChat} from '../Component/AIChat/AIChat.jsx';
-import {Copy} from 'lucide-react';
+import React, { useEffect, useState, useRef } from 'react';
+import { LinkGenerator } from '../Component/LinkGenerator/LinkGenerator.jsx';
+import { AIChat } from '../Component/AIChat/AIChat.jsx';
+import { Copy } from 'lucide-react';
 import './CSS/HomePage.css';
-import {QRCodeSVG} from 'qrcode.react';
-import {useRef} from "react";
+import { QRCodeSVG } from 'qrcode.react';
 import dl_icon from "../Component/Assets/download.png";
+import alarm_icon from "../Component/Assets/alarm_icon.png";
 
 export const HomePage = () => {
     const [generatedLink, setGeneratedLink] = useState('');
+    const [generatedTime, setGeneratedTime] = useState('');
+    const [availabilityCount, setAvailabilityCount] = useState(0);
     const [copySuccess, setCopySuccess] = useState(false);
-
     const qrRef = useRef(null);
 
     const handleDownload = () => {
@@ -27,7 +28,6 @@ export const HomePage = () => {
             ctx.drawImage(img, 0, 0);
             const pngFile = canvas.toDataURL('image/png');
 
-            // 创建一个a标签进行下载
             const downloadLink = document.createElement('a');
             downloadLink.href = pngFile;
             downloadLink.download = 'qrcode.png';
@@ -43,12 +43,66 @@ export const HomePage = () => {
         if (scheduleId) {
             const link = `${window.location.origin}/availability?sid=${scheduleId}`;
             setGeneratedLink(link);
+
+            fetchScheduleTime(scheduleId);
+            fetchAvailabilityCount(scheduleId);
         }
     }, []);
+
+    const fetchAvailabilityCount = async (scheduleId) => {
+        try {
+            const res = await fetch(`http://localhost:5001/api/availability-count/${scheduleId}`);
+            const data = await res.json();
+            if (data.count !== undefined) {
+                setAvailabilityCount(data.count);
+            }
+        } catch (err) {
+            console.error('Error fetching availability count:', err);
+        }
+    };
+
+    const fetchScheduleTime = async (scheduleId) => {
+        try {
+            const res = await fetch(`http://localhost:5001/api/schedule/${scheduleId}`);
+            const data = await res.json();
+
+            let ms;
+            if (data.created_at?.$numberLong) {
+                ms = Number(data.created_at.$numberLong);
+            } else if (data.created_at?.$date?.$numberLong) {
+                ms = Number(data.created_at.$date.$numberLong);
+            } else if (data.created_at?.$date) {
+                ms = Date.parse(data.created_at.$date);
+            }
+            if (!ms) return;
+
+            const utcDate = new Date(ms);
+            const userTZ = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            const local = new Date(utcDate.toLocaleString('en-US', { timeZone: userTZ }));
+
+            if (local.getHours() < 4) local.setDate(local.getDate() - 1);
+
+            const nice = local.toLocaleString('en-AU', {
+                timeZone: userTZ,
+                weekday: 'short',
+                day: '2-digit',
+                month: 'short',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true,
+            });
+
+            setGeneratedTime(nice);
+        } catch (err) {
+            console.error('schedule time fetch error', err);
+        }
+    };
 
     const handleScheduleGenerated = (id) => {
         const link = `${window.location.origin}/availability?sid=${id}`;
         setGeneratedLink(link);
+        fetchScheduleTime(id);
+        fetchAvailabilityCount(id);
     };
 
     const handleCopyLink = () => {
@@ -75,59 +129,63 @@ export const HomePage = () => {
                                             </a>
                                         </div>
                                         <button className="copy-button" onClick={handleCopyLink}>
-                                            <Copy size={20}/>
+                                            <Copy size={20} />
                                         </button>
                                     </div>
                                     {copySuccess && <p className="copy-success">Copied!</p>}
                                 </>
                             )}
                         </div>
-                        <div className="link-section link-button">
+
+                        <div className="link-section link-button" ref={qrRef}>
                             {generatedLink && (
-                                <div
-                                    ref={qrRef}
-                                    style={{
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        height: '100%',
-                                    }}
-                                >
+                                <>
                                     <QRCodeSVG
                                         value={generatedLink}
                                         size={300}
                                         level="H"
                                         includeMargin={true}
                                     />
-                                    <button
-                                        onClick={handleDownload}
-                                        style={{
-                                            background: 'none',
-                                            border: 'none',
-                                            padding: 0,
-                                            margin: 0,
-                                            font: 'inherit',
-                                            color: 'inherit',
-                                            cursor: 'pointer'
-                                        }}
-                                    >
-                                        <img src={dl_icon} alt="AI" className="dl_icon"/ >
+                                    <button className="download-button" onClick={handleDownload}>
+                                        <img src={dl_icon} alt="Download" className="dl-icon" />
                                         <span>Download</span>
                                     </button>
-                                </div>
+                                </>
                             )}
                         </div>
+
                         <div className="generate-button-wrapper-home">
-                            <LinkGenerator onScheduleGenerated={handleScheduleGenerated}/>
+                            <div className='generate-button'>
+                            <LinkGenerator onScheduleGenerated={handleScheduleGenerated} />
+                            </div>
+                            
                         </div>
+
+                        {generatedTime && (
+                            <p className="generated-time">Link last generated at {generatedTime}.</p>
+                        )}
                     </div>
+
                     <div className="sidebar-section bottom-section">
-                        {/* Content for the bottom left section */}
+                        
+                    {availabilityCount >= 0 && (
+                        <div className="availability-info">
+                            <div className="availability-line">
+                                <img src={alarm_icon} alt="Alarm Icon" className="alarm-icon" />
+                                <strong className="availability-count">{availabilityCount}</strong>
+                                <span className="availability-text">
+                                    {availabilityCount === 1 ? 'employee has' : 'employees have'} submitted their availabilities.
+                                </span>
+                            </div>
+                            <div className="availability-subtext">
+                                Chat with our agent to start your scheduling.
+                            </div>
+                        </div>
+                    )}
                     </div>
                 </div>
 
-                <AIChat/>
+                <AIChat />
             </div>
         </div>
     );
