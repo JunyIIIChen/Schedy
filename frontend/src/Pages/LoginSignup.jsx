@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "./CSS/LoginSignup.css";
 import signin1 from "../Component/Assets/signin1.png";
 // import signin2 from "../Component/Assets/signin2.png";
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5001';
 
 const LoginSignup = () => {
 
@@ -14,7 +15,7 @@ const LoginSignup = () => {
 
   const login = async () => {
     let dataObj;
-    await fetch('http://localhost:5001/login', {
+    await fetch('${API_BASE_URL}/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -36,7 +37,7 @@ const LoginSignup = () => {
 
   const signup = async () => {
     let dataObj;
-    await fetch('http://localhost:5001/signup', {
+    await fetch('${API_BASE_URL}/signup', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

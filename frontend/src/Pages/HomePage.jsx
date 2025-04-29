@@ -14,6 +14,7 @@ export const HomePage = () => {
     const [availabilityCount, setAvailabilityCount] = useState(0);
     const [copySuccess, setCopySuccess] = useState(false);
     const qrRef = useRef(null);
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5001';
 
     const handleDownload = () => {
         const svg = qrRef.current.querySelector('svg');
@@ -51,7 +52,7 @@ export const HomePage = () => {
 
     const fetchAvailabilityCount = async (scheduleId) => {
         try {
-            const res = await fetch(`http://localhost:5001/api/availability-count/${scheduleId}`);
+            const res = await fetch(`${API_BASE_URL}/api/availability-count/${scheduleId}`);
             const data = await res.json();
             if (data.count !== undefined) {
                 setAvailabilityCount(data.count);
@@ -63,7 +64,7 @@ export const HomePage = () => {
 
     const fetchScheduleTime = async (scheduleId) => {
         try {
-            const res = await fetch(`http://localhost:5001/api/schedule/${scheduleId}`);
+            const res = await fetch(`${API_BASE_URL}/api/schedule/${scheduleId}`);
             const data = await res.json();
 
             let ms;

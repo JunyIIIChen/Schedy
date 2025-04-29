@@ -17,6 +17,7 @@ export const AIChat = () => {
   const messagesEndRef = useRef(null);
   const typingIntervalRef = useRef(null);
   const navigate = useNavigate();
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5001';
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -39,7 +40,7 @@ export const AIChat = () => {
     setInput('');  // 清空input框，防止误发送空白
 
     try {
-      const res = await fetch('http://localhost:5001/api/schedule-agent', {
+      const res = await fetch('${API_BASE_URL}/api/schedule-agent', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

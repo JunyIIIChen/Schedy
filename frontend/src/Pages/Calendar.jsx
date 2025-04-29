@@ -21,6 +21,7 @@ const EventCalendar = () => {
   const [userData, setUserData] = useState(null);
   const [error, setError] = useState('');
   const location = useLocation();
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5001';
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
@@ -38,7 +39,7 @@ const EventCalendar = () => {
     }
 
     try {
-      const res = await fetch("http://localhost:5001/api/basic", {
+      const res = await fetch("${API_BASE_URL}/api/basic", {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${token}`,
@@ -167,7 +168,7 @@ const EventCalendar = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:5001/api/update_user", {
+      const response = await fetch("${API_BASE_URL}/api/update_user", {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${token}`,
@@ -200,7 +201,7 @@ const EventCalendar = () => {
 
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:5001/api/view-calendar', {
+      const res = await fetch('h${API_BASE_URL}/api/view-calendar', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
