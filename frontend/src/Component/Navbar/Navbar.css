@@ -113,6 +113,10 @@
 /*    display: none;*/
 /*}*/
 
+body.hide-navbar .navbar {
+  display: none !important;
+}
+
 /* -------- media query---------- */
 @media(max-width:900px){
     .navbar{
