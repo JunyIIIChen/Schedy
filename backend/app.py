@@ -186,18 +186,38 @@ def basic_information():
 def update_user():
     try:
         data = request.get_json()
-        print('---------------------')
 
-        user_id = data["updates"]["_id"]["$oid"]
-        updates = data["updates"]
-
-
-        # Check if _id is valid
-        if not ObjectId.is_valid(ObjectId(user_id)):
+        # 先拿到 _id
+        user_id_obj = data["updates"].get("_id")
+        if not user_id_obj or "$oid" not in user_id_obj:
             return jsonify({"error": "Invalid ID format"}), 400
 
-        # Remove _id if present to avoid modifying it
+        user_id = user_id_obj["$oid"]
+
+        if not ObjectId.is_valid(user_id):
+            return jsonify({"error": "Invalid ID format"}), 400
+
+        # 拿完 _id 后，删除 updates 里的 _id，防止 MongoDB 报错
+        updates = data["updates"]
         updates.pop("_id", None)
+
+        # 再拿 events
+        new_events = updates.pop("events", None)
+
+        # 查找用户
+        user = db.users.find_one({"_id": ObjectId(user_id)})
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+
+        # 合并 events
+        if new_events:
+            existing_events = user.get("events", {})
+            for schedule_id, event_list in new_events.items():
+                existing_events[schedule_id] = event_list
+
+            updates["events"] = existing_events
+
+        # 更新数据库
         result = db.users.update_one(
             {"_id": ObjectId(user_id)},
             {"$set": updates}
@@ -210,6 +230,18 @@ def update_user():
 
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 400
+
+
+@app.route("/api/availability-count/<string:schedule_id>", methods=["GET"])
+def get_availability_count(schedule_id):
+    """
+    根据 schedule_id 统计有多少人提交了 availabilities。
+    """
+    try:
+        count = availabilities_collection.count_documents({"schedule_id": schedule_id})
+        return jsonify({"count": count}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 @app.route("/api/schedule", methods=["POST"])
@@ -229,13 +261,37 @@ def create_schedule():
     doc = {
         "schedule_id": schedule_id,
         "users_id": users_id,
-        "created_at": datetime.datetime.now(),
+        # 存 **真正的 UTC**（最简单）————
+        "created_at": datetime.datetime.utcnow(),
+        # 如果你就想存墨尔本本地，也要加 tzinfo
+        # "created_at": datetime.datetime.now(pytz.timezone('Australia/Melbourne')),
         "status": "collecting"
     }
     schedules_collection.insert_one(doc)
 
     return jsonify({"schedule_id": schedule_id}), 201
 
+# for the  generate link API last link generated at when information
+# get info and generate information let user know when was the last time generated the link
+@app.route("/api/schedule/<string:schedule_id>", methods=["GET"])
+def get_schedule_info(schedule_id):
+    """
+    Get schedule info by schedule_id.
+    """
+    try:
+        schedule = schedules_collection.find_one({"schedule_id": schedule_id})
+        if not schedule:
+            return jsonify({"error": "Schedule not found"}), 404
+        
+        schedule_json = json.loads(json_util.dumps(schedule))
+
+        return jsonify({
+            "schedule_id": schedule_json.get("schedule_id"),
+            "created_at": schedule_json.get("created_at")
+        }), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+        
 @app.route("/api/availability/<string:schedule_id>", methods=["POST"])
 def submit_availability(schedule_id):
     """
@@ -299,6 +355,45 @@ def get_next_week_range():
     return next_monday.isoformat(), next_sunday.isoformat()
 
 
+
+# -----------------------------
+# 工作人员配置时间解析工具
+# -----------------------------
+def parse_worker_config_to_text(worker_config: dict) -> str:
+    """将workerConfig解析成简单易懂的文字版"""
+    day_map = {
+        'monday': 'Monday',
+        'tuesday': 'Tuesday',
+        'wednesday': 'Wednesday',
+        'thursday': 'Thursday',
+        'friday': 'Friday',
+        'saturday': 'Saturday',
+        'sunday': 'Sunday'
+    }
+
+    lines = []
+    for day_key in ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']:
+        config = worker_config.get(day_key)
+        if not config:
+            continue
+        
+        day_name = day_map.get(day_key, day_key.capitalize())
+        day_off = config.get('dayOff', False)
+        start = config.get('start', '-')
+        end = config.get('end', '-')
+        workers = config.get('workers', 0)
+
+        if day_off:
+            line = f"{day_name}: Shop closed, no shifts needed."
+        else:
+            line = f"{day_name}: Open from {start} to {end}, requires {workers} worker(s)."
+        
+        lines.append(line)
+    
+    summary = "\n".join(lines)
+    return summary
+
+
 # -----------------------------
 # 全局变量
 # -----------------------------
@@ -306,7 +401,7 @@ chat_histories = {}
 schedule_requirements = {}
 TRIGGER_WORDS = ["start scheduling", "generate schedule", "run schedule", "开始排班"]
 
-llm = ChatOpenAI(model_name="gpt-4o", temperature=0)
+llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0)
 
 SYSTEM_PROMPT = (
     "You are a helpful AI scheduling assistant.\n"
@@ -315,8 +410,6 @@ SYSTEM_PROMPT = (
     "   - business hours\n"
     "   - user scheduling requirements\n"
     "   - employee availability (from the tool)\n\n"
-    "Output format must be a JSON array like this:\n"
-    "[{'id': 1, 'employee': 'Alice', 'email': 'alice@example.com', 'start': '2025-04-21T10:00:00', 'end': '2025-04-21T16:00:00'}]"
 )
 
 # -----------------------------
@@ -392,11 +485,30 @@ def schedule_agent():
         verbose=True
     )
 
+    schedule_record = schedules_collection.find_one({"schedule_id": schedule_id})
+    if not schedule_record:
+        return jsonify({"error": "Schedule not found"}), 404
+
+    user_id = schedule_record.get("users_id")
+    # print("=== schedule_record ===")
+    # print(schedule_record)
+    user_record = users_collection.find_one({"_id": ObjectId(user_id)})
+    # print("=== user_record ===")
+    # print(user_record)
+
+    worker_config = user_record.get("workerConfig", {})
+    # print("=== worker_config from DB ===")
+    # print(worker_config)
+
+    text_summary = parse_worker_config_to_text(worker_config)
+
     requirements = "\n".join(schedule_requirements.get(schedule_id, []))
     result = agent.invoke({
         "input": f"""
         User has collected these scheduling requirements:
         {requirements}
+        Here is the worker configuration:
+        {text_summary}
         Schedule ID: {schedule_id}
         Generate the schedule now.
         """,
@@ -426,6 +538,23 @@ def schedule_agent():
 def view_calendar():
     data = request.get_json()
     schedule_id = data.get("schedule_id")
+
+    schedule_record = schedules_collection.find_one({"schedule_id": schedule_id})
+    if not schedule_record:
+        return jsonify({"error": "Schedule not found"}), 404
+
+    user_id = schedule_record.get("users_id")
+    # print("=== schedule_record ===")
+    # print(schedule_record)
+    user_record = users_collection.find_one({"_id": ObjectId(user_id)})
+    # print("=== user_record ===")
+    # print(user_record)
+
+    worker_config = user_record.get("workerConfig", {})
+    # print("=== worker_config from DB ===")
+    # print(worker_config)
+
+    text_summary = parse_worker_config_to_text(worker_config)
 
     if not schedule_id:
         return jsonify({"error": "Missing schedule_id"}), 400
@@ -469,7 +598,11 @@ Here is the full chat history:
 Here is the employee availability data:
 {json.dumps(availability_data, indent=2)}
 
-Now based on both the chat and employee availability, generate the schedule for the week from {start_date} to {end_date}.
+Here is the business hours configuration:
+{text_summary}
+
+Now based on the chat history, employee availability, and business hours generate the schedule for the week from {start_date} to {end_date}.
+DO NOT arrange any shifts if the shop is closed on that day.
 Return only a valid JSON array like:
 [
   {{"id": 1, "employee": "Alice", "email": "alice@example.com", "start": "{start_date}T10:00:00", "end": "{start_date}T16:00:00"}}
