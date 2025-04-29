@@ -6,6 +6,7 @@ export const Settings = () => {
     const [link, setLink] = useState('');
     const [error, setError] = useState('');
     const [userData, setUserData] = useState(null);
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5001';
 
     useEffect(() => {
         const load_user_information = async () => {
@@ -17,7 +18,7 @@ export const Settings = () => {
             }
 
             try {
-                const res = await fetch("http://localhost:5001/api/basic", {
+                const res = await fetch("${API_BASE_URL}/api/basic", {
                     method: "POST",
                     headers: {
                         "Authorization": `Bearer ${token}`,
@@ -54,7 +55,7 @@ export const Settings = () => {
                 return;
             }
 
-            const response = await fetch("http://localhost:5001/api/update_user", {
+            const response = await fetch("${API_BASE_URL}/api/update_user", {
                 method: "POST",
                 headers: {
                     "Authorization": `Bearer ${token}`,

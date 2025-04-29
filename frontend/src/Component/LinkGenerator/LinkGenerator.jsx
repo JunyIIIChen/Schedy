@@ -4,6 +4,7 @@ import './LinkGenerator.css'; // 记得引入对应样式
 
 export const LinkGenerator = ({ onScheduleGenerated }) => {
   const [error, setError] = useState('');
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5001';
 
   const handleGenerateLink = async () => {
     const token = localStorage.getItem("auth-token");
@@ -13,7 +14,7 @@ export const LinkGenerator = ({ onScheduleGenerated }) => {
     }
 
     try {
-      const res = await fetch("http://localhost:5001/api/schedule", {
+      const res = await fetch("${API_BASE_URL}/api/schedule", {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${token}`,

@@ -8,6 +8,7 @@ function Availability() {
   const [searchParams] = useSearchParams();
   const scheduleId = searchParams.get("sid");
   console.log("Schedule ID:", scheduleId);
+  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5001';
 
   const days = [
     "Monday",
@@ -81,7 +82,7 @@ function Availability() {
       preference,
     };
 
-    fetch(`http://localhost:5001/api/availability/${scheduleId}`, {
+    fetch(`${API_BASE_URL}/api/availability/${scheduleId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
