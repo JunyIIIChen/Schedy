@@ -1,17 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './CSS/OnboardingPage.css';
 import Lottie from 'lottie-react';
 import animationData from '../Component/Assets/Frame-2087326994.json';
 import threeStars from '../Component/Assets/three_stars.svg';
 import { LinkGenerator } from '../Component/LinkGenerator/LinkGenerator';
 import { Copy } from 'lucide-react';
+import onboardingAnimation from '../Component/Assets/onboarding_animation_1.json';
+import onboardingAnimation2 from '../Component/Assets/onboarding_animation_2.json';
 
 const OnboardingPage = () => {
   const [scheduleId, setScheduleId] = useState('');
   const [step, setStep] = useState(1);
   const [industry, setIndustry] = useState('');
-    const [copySuccess, setCopySuccess] = useState(false);
-    const [saving, setSaving] = useState(false);  
+  const [copySuccess, setCopySuccess] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const [workerConfig, setWorkerConfig] = useState({
     monday: { start: "08:00", end: "19:00", workers: 3, dayOff: false },
@@ -22,6 +24,9 @@ const OnboardingPage = () => {
     saturday: { start: "08:00", end: "19:00", workers: 3, dayOff: false },
     sunday: { start: "08:00", end: "19:00", workers: 3, dayOff: false },
   });
+
+  const [animationStep, setAnimationStep] = useState(1);
+  const [animationFinished, setAnimationFinished] = useState(false);
 
   const days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
 
@@ -42,10 +47,9 @@ const OnboardingPage = () => {
       setTimeout(() => setCopySuccess(false), 2000);
     });
   };
-    
+
   const handleSubmit = async () => {
     setSaving(true);
-  
     try {
       const token = localStorage.getItem('auth-token');
       if (!token) {
@@ -53,8 +57,7 @@ const OnboardingPage = () => {
         setSaving(false);
         return;
       }
-  
-      // 1. 先拿当前用户完整信息
+
       const basicRes = await fetch('http://localhost:5001/api/basic', {
         method: 'POST',
         headers: {
@@ -62,17 +65,16 @@ const OnboardingPage = () => {
           'Authorization': `Bearer ${token}`,
         },
       });
-  
+
       const basicData = await basicRes.json();
       if (!basicRes.ok || !basicData || !basicData._id || !basicData._id.$oid) {
         alert('Failed to fetch user information.');
         setSaving(false);
         return;
       }
-  
-      const userId = basicData._id.$oid; // ✅ 注意是 _id.$oid
-  
-      // 2. 更新industry 和 workerConfig
+
+      const userId = basicData._id.$oid;
+
       const updateRes = await fetch('http://localhost:5001/api/update_user', {
         method: 'POST',
         headers: {
@@ -87,12 +89,12 @@ const OnboardingPage = () => {
           },
         }),
       });
-  
+
       const updateData = await updateRes.json();
       if (updateRes.ok && updateData.success) {
         alert('Information saved successfully!');
         setTimeout(() => {
-          window.location.href = '/homepage'; // 保存后跳转首页
+          window.location.href = '/homepage';
         }, 1000);
       } else {
         alert(updateData.message || 'Save failed');
@@ -104,155 +106,187 @@ const OnboardingPage = () => {
       setSaving(false);
     }
   };
-  
+
+  useEffect(() => {
+    if (!animationFinished) {
+      document.body.classList.add('hide-navbar');
+    } else {
+      document.body.classList.remove('hide-navbar');
+    }
+  }, [animationFinished]);
 
   return (
-    <div className="onboarding-container">
-
-      {/* 🎯 Step 1 */}
-      {step === 1 && (
-        <>
-          <div className="onboarding-svg-icon">
-            <img src={threeStars} alt="" />
-          </div>
-          <h2 className="onboarding-title">Welcome onboard!</h2>
-
-          <div className="lottie-row">
-            <Lottie className="lottie-avatar" animationData={animationData} loop={true} />
-            <div className="company-info">
-              <div className="glass-box">Tell me a bit about your company.</div>
-              <select
-                value={industry}
-                onChange={(e) => setIndustry(e.target.value)}
-                className="glass-box input-field"
-              >
-                <option value="" disabled>What industry best describes your business?</option>
-                <option value="Retail">Retail</option>
-                <option value="Hotel">Hotel</option>
-                <option value="Restaurant">Restaurant</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="button-row  first-step">
-            <button className="next-button" onClick={() => setStep(2)}>Next →</button>
-          </div>
-        </>
+    <div className="onboarding-wrapper">
+      {/* 🌀 Animation Section */}
+      {!animationFinished && (
+        <div className="animation-container fade-in">
+          {animationStep === 1 && (
+            <Lottie
+              animationData={onboardingAnimation}
+              loop={false}
+              className="onboarding-opening-animation"
+              onComplete={() => setAnimationStep(2)}
+            />
+          )}
+          {animationStep === 2 && (
+            <Lottie
+              animationData={onboardingAnimation2}
+              loop={false}
+              className="onboarding-opening-animation"
+              onComplete={() => {
+                setTimeout(() => {
+                  setAnimationFinished(true);
+                }, 1000);
+              }}
+            />
+          )}
+        </div>
       )}
 
-      {/* 🎯 Step 2 */}
-      {step === 2 && (
-        <>
-          <div className="lottie-row">
-            <Lottie className="lottie-avatar" animationData={animationData} loop={true} />
-            <div className="fade-in">
-              <h3 className="glass-box form-title">How many workers do you need during the following hours</h3>
-              <div className="worker-table">
-                <div className="table-header">
-                  <span>Day</span><span>Start</span><span>End</span><span>Workers</span><span>Day Off</span>
-                </div>
-                {days.map(day => (
-                  <div className="table-row" key={day}>
-                    <span className="day-name">{day.slice(0, 3)}</span>
-                    <input
-                      type="time"
-                      value={workerConfig[day].start}
-                      onChange={(e) => handleConfigChange(day, "start", e.target.value)}
-                      disabled={workerConfig[day].dayOff}
-                    />
-                    <input
-                      type="time"
-                      value={workerConfig[day].end}
-                      onChange={(e) => handleConfigChange(day, "end", e.target.value)}
-                      disabled={workerConfig[day].dayOff}
-                    />
-                    <input
-                      type="number"
-                      min="0"
-                      value={workerConfig[day].workers}
-                      onChange={(e) => handleConfigChange(day, "workers", e.target.value)}
-                      disabled={workerConfig[day].dayOff}
-                    />
-                    <input
-                      type="checkbox"
-                      checked={workerConfig[day].dayOff}
-                      onChange={() => handleConfigChange(day, "dayOff")}
-                    />
-                  </div>
-                ))}
+      {/* 🎯 Onboarding Steps */}
+      {animationFinished && (
+        <div className="onboarding-container fade-in">
+          {/* 你的Step 1, 2, 3, 4原本代码放这里 */}
+          {/* 🎯 Step 1 */}
+          {step === 1 && (
+            <>
+              <div className="onboarding-svg-icon">
+                <img src={threeStars} alt="" />
               </div>
-              <div className="button-row">
-                <button className="back-button" onClick={() => setStep(1)}>← Back</button>
-                <button className="next-button" onClick={() => setStep(3)}>Next →</button>
-              </div>
-            </div>
-          </div>
-        </>
-      )}
-
-      {/* 🎯 Step 3 */}
-      {step === 3 && (
-        <>
-          <h2 className="onboarding-title">Welcome onboard!</h2>
-          <div className="lottie-row">
-            <Lottie className="lottie-avatar" animationData={animationData} loop={true} />
-            <div className="glass-box">We have generated a form collecting availability information from employees.</div>
-          </div>
-
-          <div className="glass-box view-form-box">
-            <span>Work Availability Form</span>
-            <button className="view-form-button">View Form ⌄</button>
-          </div>
-
-          <div className="lottie-row">
-            <Lottie className="lottie-avatar" animationData={animationData} loop={true} />
-            <div className="glass-box">
-              Click Generate Button to generate the form link, and send it to your employees.
-              <div className="generate-button-wrapper">
-                <LinkGenerator onScheduleGenerated={setScheduleId} />
-              </div>
-            </div>
-          </div>
-
-          {scheduleId && (
-            <div className="glass-box generated-link-box">
-              <div className="link-content">
-                <div>
-                  <p>Share this link with your employees:</p>
-                  <a
-                    href={`${window.location.origin}/availability?sid=${scheduleId}`}
-                    target="_blank"
-                    rel="noreferrer"
+              <h2 className="onboarding-title">Welcome onboard!</h2>
+              <div className="lottie-row">
+                <Lottie className="lottie-avatar" animationData={animationData} loop={true} />
+                <div className="company-info">
+                  <div className="glass-box">Tell me a bit about your company.</div>
+                  <select
+                    value={industry}
+                    onChange={(e) => setIndustry(e.target.value)}
+                    className="glass-box input-field"
                   >
-                    {`${window.location.origin}/availability?sid=${scheduleId}`}
-                  </a>
+                    <option value="" disabled>What industry best describes your business?</option>
+                    <option value="Retail">Retail</option>
+                    <option value="Hotel">Hotel</option>
+                    <option value="Restaurant">Restaurant</option>
+                  </select>
                 </div>
-                <button className="copy-button" onClick={handleCopyLink}>
-                  <Copy size={20} />
-                </button>
               </div>
-              {copySuccess && <p className="copy-success">Copied!</p>}
-            </div>
+              <div className="button-row first-step">
+                <button className="next-button" onClick={() => setStep(2)}>Next →</button>
+              </div>
+            </>
           )}
 
-          <div className="button-row">
-            <button className="back-button" onClick={() => setStep(2)}>← Back</button>
-            <button className="next-button" onClick={() => setStep(4)}>Next →</button> {/* 👈 新增跳转 Step 4 */}
-          </div>
-        </>
-      )}
+          {/* 🎯 Step 2 */}
+          {step === 2 && (
+            <>
+              <div className="lottie-row">
+                <Lottie className="lottie-avatar" animationData={animationData} loop={true} />
+                <div className="fade-in">
+                  <h3 className="glass-box form-title">How many workers do you need during the following hours</h3>
+                  <div className="worker-table">
+                    <div className="table-header">
+                      <span>Day</span><span>Start</span><span>End</span><span>Workers</span><span>Day Off</span>
+                    </div>
+                    {days.map(day => (
+                      <div className="table-row" key={day}>
+                        <span className="day-name">{day.slice(0, 3)}</span>
+                        <input
+                          type="time"
+                          value={workerConfig[day].start}
+                          onChange={(e) => handleConfigChange(day, "start", e.target.value)}
+                          disabled={workerConfig[day].dayOff}
+                        />
+                        <input
+                          type="time"
+                          value={workerConfig[day].end}
+                          onChange={(e) => handleConfigChange(day, "end", e.target.value)}
+                          disabled={workerConfig[day].dayOff}
+                        />
+                        <input
+                          type="number"
+                          min="0"
+                          value={workerConfig[day].workers}
+                          onChange={(e) => handleConfigChange(day, "workers", e.target.value)}
+                          disabled={workerConfig[day].dayOff}
+                        />
+                        <input
+                          type="checkbox"
+                          checked={workerConfig[day].dayOff}
+                          onChange={() => handleConfigChange(day, "dayOff")}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                  <div className="button-row">
+                    <button className="back-button" onClick={() => setStep(1)}>← Back</button>
+                    <button className="next-button" onClick={() => setStep(3)}>Next →</button>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
 
-      {/* 🎯 Step 4 - Congrats Page */}
-      {step === 4 && (
-        <div className="congrats-page fade-in">
-          <div className="onboarding-svg-icon">
-            <img src={threeStars} alt="" />
-          </div>
-          <h2 className="congrats-title">Congrats!</h2>
-          <p className="congrats-text">
-            We're excited to have you on board! Share this link with your team, and let our smart AI handle the rest. Your custom work schedule will be ready soon — exciting things are coming!
-          </p>
-          <button className="next-button" onClick={handleSubmit}>Got it</button>
+          {/* 🎯 Step 3 */}
+          {step === 3 && (
+            <>
+              <h2 className="onboarding-title">Welcome onboard!</h2>
+              <div className="lottie-row">
+                <Lottie className="lottie-avatar" animationData={animationData} loop={true} />
+                <div className="glass-box">We have generated a form collecting availability information from employees.</div>
+              </div>
+              <div className="glass-box view-form-box">
+                <span>Work Availability Form</span>
+                <button className="view-form-button">View Form ⌄</button>
+              </div>
+              <div className="lottie-row">
+                <Lottie className="lottie-avatar" animationData={animationData} loop={true} />
+                <div className="glass-box">
+                  Click Generate Button to generate the form link, and send it to your employees.
+                  <div className="generate-button-wrapper">
+                    <LinkGenerator onScheduleGenerated={setScheduleId} />
+                  </div>
+                </div>
+              </div>
+              {scheduleId && (
+                <div className="glass-box generated-link-box">
+                  <div className="link-content">
+                    <div>
+                      <p>Share this link with your employees:</p>
+                      <a
+                        href={`${window.location.origin}/availability?sid=${scheduleId}`}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        {`${window.location.origin}/availability?sid=${scheduleId}`}
+                      </a>
+                    </div>
+                    <button className="copy-button" onClick={handleCopyLink}>
+                      <Copy size={20} />
+                    </button>
+                  </div>
+                  {copySuccess && <p className="copy-success">Copied!</p>}
+                </div>
+              )}
+              <div className="button-row">
+                <button className="back-button" onClick={() => setStep(2)}>← Back</button>
+                <button className="next-button" onClick={() => setStep(4)}>Next →</button>
+              </div>
+            </>
+          )}
+
+          {/* 🎯 Step 4 */}
+          {step === 4 && (
+            <div className="congrats-page fade-in">
+              <div className="onboarding-svg-icon">
+                <img src={threeStars} alt="" />
+              </div>
+              <h2 className="congrats-title">Congrats!</h2>
+              <p className="congrats-text">
+                We're excited to have you on board! Share this link with your team, and let our smart AI handle the rest. Your custom work schedule will be ready soon — exciting things are coming!
+              </p>
+              <button className="next-button" onClick={handleSubmit}>Got it</button>
+            </div>
+          )}
         </div>
       )}
     </div>
