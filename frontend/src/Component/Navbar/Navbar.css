@@ -61,16 +61,19 @@
 
 
 .nav-menu-item {
-  color: #333;
-  font-weight: 500;
-  padding: 8px 12px;
-  border-radius: 32px;
+  /* font-weight: 600; */
+  padding: 8px 0;
   text-decoration: none;
-  transition: background-color 0.3s;
+  background: black;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  transition: all 0.3s ease;
+  position: relative;
 }
 
 .nav-menu-item:hover {
-  background-color: #f0f0f0;
+  font-weight: 600;
 }
 
 
@@ -96,22 +99,10 @@
   width: 35px;
 }
 
-/*.nav-cart-count{*/
-/*    width: 18px;*/
-/*    height: 18px;*/
-/*    border-radius: 50%;*/
-/*    display: flex;*/
-/*    justify-content: center;*/
-/*    align-items: center;*/
-/*    margin-top: -30px;*/
-/*    margin-left: -40px;*/
-/*    font-size: 14px;*/
-/*    background: red;*/
-/*    color: white;*/
-/*}*/
-/*.nav-dropdown{*/
-/*    display: none;*/
-/*}*/
+.nav-menu-item.active {
+  border-bottom: 2px solid #495AFF;
+  color: #495AFF;
+}
 
 body.hide-navbar .navbar {
   display: none !important;
