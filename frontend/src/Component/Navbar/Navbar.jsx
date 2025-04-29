@@ -17,7 +17,6 @@ export const Navbar = () => {
       <Link to="/" style={{ textDecoration: 'none' }}>
         <div className='nav-logo'>
           <img src={logo} alt="" />
-          <p>Schedy</p>
         </div>
       </Link>
 
