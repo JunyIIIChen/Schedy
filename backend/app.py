@@ -4,6 +4,7 @@ import json
 import re
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from flask import send_from_directory
 from dotenv import load_dotenv
 from pymongo import MongoClient
 import jwt
@@ -17,10 +18,14 @@ from langchain_core.prompts import PromptTemplate
 from langchain.agents import initialize_agent, AgentType
 from langchain.tools import tool
 from langchain.agents import Tool
+import os
 
 
-
-app = Flask(__name__)
+app = Flask(
+    __name__,
+    static_folder=os.path.join('..', 'frontend', 'build', 'static'),
+    template_folder=os.path.join('..', 'frontend', 'build')
+)
 CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}}, supports_credentials=True)
 
 # Set a salt key for JWT encoding/decoding
@@ -41,12 +46,23 @@ schedules_collection = db['schedules']
 availabilities_collection = db['availabilities']
 chat_collection = db['chat_histories']
 
-
-
 @app.route('/')
 def index():
-    """Root endpoint to check if the application is running."""
-    return 'Hello, Flask!'
+    return send_from_directory(app.template_folder, 'index.html')
+
+@app.route('/<path:path>')
+def static_proxy(path):
+    file_path = os.path.join(app.static_folder, path)
+    if os.path.exists(file_path):
+        return send_from_directory(app.static_folder, path)
+    else:
+        return send_from_directory(app.template_folder, 'index.html')
+
+
+# @app.route('/')
+# def index():
+#     """Root endpoint to check if the application is running."""
+#     return 'Hello, Flask!'
 
 
 @app.route("/signup", methods=["POST", "OPTIONS"])
@@ -489,4 +505,4 @@ Return only a valid JSON array like:
 
 if __name__ == '__main__':
     port = int(os.getenv("PORT", 5001))
-    app.run(host='0.0.0.0', port=port, debug=False)
+    app.run(host='0.0.0.0', port=port)
