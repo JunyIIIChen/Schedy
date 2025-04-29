@@ -26,7 +26,7 @@ app = Flask(
     static_folder=os.path.join('..', 'frontend', 'build', 'static'),
     template_folder=os.path.join('..', 'frontend', 'build')
 )
-CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}}, supports_credentials=True)
+CORS(app)
 
 # Set a salt key for JWT encoding/decoding
 app.config['SECRET_KEY'] = 'this_is_my_secret_key'
@@ -638,4 +638,5 @@ Return only a valid JSON array like:
 
 if __name__ == '__main__':
     port = int(os.getenv("PORT", 5001))
-    app.run(host='0.0.0.0', port=port)
+    app.run(port=port,debug=True)
+    # app.run(host='0.0.0.0', port=port)
