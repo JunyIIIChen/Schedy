@@ -44,7 +44,8 @@ export const AIChat = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          schedule_id: "2afa5cf6-1051-4aca-ae1b-7c03b7d0475a",
+          // schedule_id: "aa3c8d13-0ef8-4460-96c7-0e13d8bc2a88",
+          schedule_id: scheduleId,
           message: userInput,  // 🔥 保证发送的是保存的输入，而不是被清空后的input
         }),
       });

@@ -123,7 +123,7 @@ const OnboardingPage = () => {
         <div className="animation-container fade-in">
           {animationStep === 1 && (
             <Lottie
-              animationData={onboardingAnimation}
+              animationData={onboardingAnimation2}
               loop={false}
               className="onboarding-opening-animation"
               onComplete={() => setAnimationStep(2)}
@@ -131,7 +131,7 @@ const OnboardingPage = () => {
           )}
           {animationStep === 2 && (
             <Lottie
-              animationData={onboardingAnimation2}
+              animationData={onboardingAnimation}
               loop={false}
               className="onboarding-opening-animation"
               onComplete={() => {

@@ -1,4 +1,3 @@
-// src/Component/EventCalendar.jsx
 import React, { useState, useEffect } from 'react';
 import { Calendar as BigCalendar, momentLocalizer } from 'react-big-calendar';
 import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop';
@@ -6,8 +5,8 @@ import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
 import { Modal, Form, Input, Spin } from 'antd';
-import { Link, useLocation } from 'react-router-dom';
-import ai_icon from "../Component/Assets/AI.png";
+import { useLocation } from 'react-router-dom';
+import './CSS/Calendar.css';
 
 const localizer = momentLocalizer(moment);
 const DragAndDropCalendar = withDragAndDrop(BigCalendar);
@@ -76,7 +75,6 @@ const EventCalendar = () => {
 
   const handleSelectEvent = (event) => {
     setSelectedEvent(event);
-    // console.log(event.employee)
     form.setFieldsValue({
       employee: event.employee,
       email: event.email,
@@ -99,7 +97,7 @@ const EventCalendar = () => {
       if (selectedEvent) {
         setEvents(events.map(e => e.id === selectedEvent.id ? newEvent : e));
       } else {
-        setEvents([...events, newEvent]);
+        setEvents(prev => [...prev, newEvent]);
       }
       setVisible(false);
     });
@@ -205,8 +203,7 @@ const EventCalendar = () => {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
-          // schedule_id: scheduleId
-          schedule_id: "2afa5cf6-1051-4aca-ae1b-7c03b7d0475a",
+          schedule_id: scheduleId,
         }),
       });
       const data = await res.json();
@@ -256,8 +253,10 @@ const EventCalendar = () => {
           setSelectedEvent(null);
           form.resetFields();
           form.setFieldsValue({
-            start: slotInfo.start,
-            end: slotInfo.end,
+            start: moment(slotInfo.start).format('YYYY-MM-DDTHH:mm'),
+            end: moment(slotInfo.end).format('YYYY-MM-DDTHH:mm'),
+            employee: '',
+            email: '',
           });
           setVisible(true);
         }}
@@ -285,7 +284,7 @@ const EventCalendar = () => {
 
       <Modal
         title={selectedEvent ? "Edit Schedule" : "Add New Schedule"}
-        visible={visible}
+        open={visible}
         onOk={handleSubmit}
         onCancel={() => setVisible(false)}
         okText="Save"
@@ -308,12 +307,6 @@ const EventCalendar = () => {
       </Modal>
 
       <div style={{padding: "20px", gap: "20px", display: "flex", justifyContent: "flex-end"}}>
-        {/* <Link to="/homepage" style={{textDecoration: 'none'}}>
-          <div className="calendar-btn">
-            <img src={ai_icon} alt="AI" className="ai_icon" />
-            <span>Talk with AI</span>
-          </div>
-        </Link> */}
         <button onClick={saveToDB} className="gradient-button"> Save </button>
       </div>
     </div>

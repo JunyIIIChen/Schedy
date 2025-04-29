@@ -1,0 +1,14 @@
+/* 隐藏 react-big-calendar 默认的时间 label */
+.rbc-event-label {
+    display: none !important;
+  }
+  /* 让同一天里的排班块紧凑一点 */
+.rbc-row-segment {
+    padding-top: 0px !important;   /* 上下间隔改为 0 或 1 */
+    padding-bottom: 0px !important;
+  }
+  
+  .rbc-event {
+    margin-top: 1px !important;    /* 适当留 1px 能看出分隔 */
+    margin-bottom: 1px !important;
+  }
