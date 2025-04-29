@@ -116,7 +116,7 @@ const EventCalendar = () => {
 
   const getEmployeeColor = (employee) => {
     const colors = [
-      '#6C63FF', '#FF7E67', '#48C9B0', '#F9C80E', '#A569BD', '#45B39D', '#EC7063'
+      '#8B5CF61A', '#FF7E67', '#48C9B0', '#F9C80E', '#A569BD', '#45B39D'
     ];
     const hash = [...employee].reduce((acc, char) => acc + char.charCodeAt(0), 0);
     return colors[hash % colors.length];

@@ -10,7 +10,7 @@
 
 }
 .LandingPage1 {
-  min-height: 100vh;
+  min-height: 70vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -106,7 +106,7 @@ transform: rotate(15deg);
 .LandingPage-latest-btn img{
   width: 18px;
 }
-.main-image{
+.hero-image{
   width: 1100px;
   height: 732.65px;
   border-radius: 32px;
@@ -117,7 +117,7 @@ transform: rotate(15deg);
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  height: 480px;
   width: 1100px;
   border-radius: 32px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
