@@ -621,5 +621,5 @@ Return only a valid JSON array like:
 
 
 if __name__ == '__main__':
-    # Run Flask in debug mode on port 5001
-    app.run(debug=True, port=5001)
+    port = int(os.getenv("PORT", 5001))
+    app.run(host='0.0.0.0', port=port, debug=False)
