@@ -233,11 +233,12 @@ const OnboardingPage = () => {
               <h2 className="onboarding-title">Welcome onboard!</h2>
               <div className="lottie-row">
                 <Lottie className="lottie-avatar" animationData={animationData} loop={true} />
-                <div className="glass-box">We have generated a form collecting availability information from employees.</div>
+                <div className="glass-box">We have generated a form collecting availability information from employees.<button className="view-form-button">View Form</button></div>
+                
               </div>
               <div className="glass-box view-form-box">
                 <span>Work Availability Form</span>
-                <button className="view-form-button">View Form ⌄</button>
+                
               </div>
               <div className="lottie-row">
                 <Lottie className="lottie-avatar" animationData={animationData} loop={true} />
