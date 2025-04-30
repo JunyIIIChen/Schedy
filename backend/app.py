@@ -65,7 +65,7 @@ def index_test():
     return 'Hello, Flask!'
 
 
-@app.route("/signup", methods=["POST", "OPTIONS"])
+@app.route("/api/signup", methods=["POST", "OPTIONS"])
 def signup():
     """
     Handle user signup.
@@ -103,7 +103,7 @@ def signup():
     return jsonify({"success": True, "token": token})
 
 
-@app.route("/login", methods=["POST", "OPTIONS"])
+@app.route("/api/login", methods=["POST", "OPTIONS"])
 def login():
     """
     Handle user login.
@@ -638,5 +638,5 @@ Return only a valid JSON array like:
 
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 10000))
+    port = int(os.environ.get('PORT', 5001))
     app.run(host='0.0.0.0', port=port)

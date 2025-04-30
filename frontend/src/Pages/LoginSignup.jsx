@@ -14,7 +14,7 @@ const LoginSignup = () => {
 
   const login = async () => {
     let dataObj;
-    await fetch('/login', {
+    await fetch('/api/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -36,7 +36,7 @@ const LoginSignup = () => {
 
   const signup = async () => {
     let dataObj;
-    await fetch('/signup', {
+    await fetch('/api/signup', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
