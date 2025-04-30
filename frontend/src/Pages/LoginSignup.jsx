@@ -14,6 +14,7 @@ const LoginSignup = () => {
     }
 
   const login = async () => {
+    console.log(API_BASE_URL)
     let dataObj;
     await fetch('${API_BASE_URL}/login', {
       method: 'POST',
