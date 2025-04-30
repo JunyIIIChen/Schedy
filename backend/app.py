@@ -344,7 +344,31 @@ def submit_availability(schedule_id):
         print("Error submitting availability:", str(e))
         return jsonify({"error": "Server error"}), 500
 
+#get the latest schedule_id to generate link and QR code
+@app.route("/api/latest-schedule", methods=["GET"])
+def get_latest_schedule():
+    current_user = get_current_user()
+    if not current_user:
+        return jsonify({"error": "Unauthorized"}), 401
 
+    user_id = current_user["user"]["id"]
+
+    try:
+        latest = schedules_collection.find_one(
+            {"users_id": user_id},
+            sort=[("created_at", -1)]
+        )
+
+        if not latest:
+            return jsonify({"message": "No schedules found"}), 404
+
+        return jsonify({
+            "schedule_id": latest["schedule_id"],
+            "created_at": json_util.dumps(latest["created_at"])
+        }), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 # -----------------------------
 # JSON 提取工具
