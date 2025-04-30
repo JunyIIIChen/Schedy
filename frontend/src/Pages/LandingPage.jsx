@@ -11,7 +11,7 @@ import frame25 from '../Component/Assets/Frame25.png'
 import frame26 from '../Component/Assets/Frame26.png'
 import frame10 from '../Component/Assets/Frame10.png'
 import comment from '../Component/Assets/Frame2087327011.png'
-import mainimage from '../Component/Assets/mainimage.png'
+import hero_image from '../Component/Assets/hero_image.png'
 import sideimage from '../Component/Assets/sideimage.png'
 
 
@@ -38,7 +38,7 @@ export const LandingPage = () => {
 
             </div>
             <div>
-                <img className={"main-image"} src={mainimage} alt=''/>
+                <img className={"hero-image"} src={hero_image} alt=''/>
 
             </div>
             <div className="content-wrapper">
