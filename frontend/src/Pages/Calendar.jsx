@@ -20,7 +20,7 @@ const EventCalendar = () => {
   const [userData, setUserData] = useState(null);
   const [error, setError] = useState('');
   const location = useLocation();
-  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5001';
+  const API_BASE_URL = window.location.origin;
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);

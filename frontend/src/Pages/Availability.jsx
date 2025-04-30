@@ -8,7 +8,7 @@ function Availability() {
   const [searchParams] = useSearchParams();
   const scheduleId = searchParams.get("sid");
   console.log("Schedule ID:", scheduleId);
-  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5001';
+  const API_BASE_URL = window.location.origin;
 
   const days = [
     "Monday",

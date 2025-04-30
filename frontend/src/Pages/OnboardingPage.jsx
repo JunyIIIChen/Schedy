@@ -15,7 +15,7 @@ const OnboardingPage = () => {
   const [industry, setIndustry] = useState('');
   const [copySuccess, setCopySuccess] = useState(false);
   const [saving, setSaving] = useState(false);
-  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5001';
+  const API_BASE_URL = window.location.origin;
 
   const [workerConfig, setWorkerConfig] = useState({
     monday: { start: "08:00", end: "19:00", workers: 3, dayOff: false },
