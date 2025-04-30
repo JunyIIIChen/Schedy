@@ -60,7 +60,7 @@ def static_proxy(path):
 
 
 @app.route('/test')
-def index():
+def index_test():
     """Root endpoint to check if the application is running."""
     return 'Hello, Flask!'
 
