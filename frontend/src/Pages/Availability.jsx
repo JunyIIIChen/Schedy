@@ -81,7 +81,7 @@ function Availability() {
       preference,
     };
 
-    fetch(`http://localhost:5001/api/availability/${scheduleId}`, {
+    fetch(`/api/availability/${scheduleId}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

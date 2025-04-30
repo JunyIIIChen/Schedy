@@ -17,7 +17,6 @@ export const AIChat = () => {
     const messagesEndRef = useRef(null);
     const typingIntervalRef = useRef(null);
     const navigate = useNavigate();
-    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5001';
     const [showSentMessage, setShowSentMessage] = useState(false);
 
     const sendMessage = async () => {
@@ -40,7 +39,7 @@ export const AIChat = () => {
 
 
         try {
-            const res = await fetch('http://localhost:5001/api/schedule-agent', {
+            const res = await fetch('/api/schedule-agent', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({

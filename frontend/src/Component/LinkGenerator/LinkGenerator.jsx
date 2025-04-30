@@ -4,7 +4,6 @@ import './LinkGenerator.css'; // 记得引入对应样式
 
 export const LinkGenerator = ({ onScheduleGenerated }) => {
   const [error, setError] = useState('');
-  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5001';
 
   const handleGenerateLink = async () => {
     const token = localStorage.getItem("auth-token");
