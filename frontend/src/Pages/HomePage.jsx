@@ -66,7 +66,7 @@ export const HomePage = () => {
 
     const fetchAvailabilityCount = async (scheduleId) => {
         try {
-            const res = await fetch(`http://localhost:5001/api/availability-count/${scheduleId}`);
+            const res = await fetch(`/api/availability-count/${scheduleId}`);
             const data = await res.json();
             if (data.count !== undefined) {
                 setAvailabilityCount(data.count);
@@ -78,7 +78,7 @@ export const HomePage = () => {
 
     const fetchScheduleTime = async (scheduleId) => {
         try {
-            const res = await fetch(`http://localhost:5001/api/schedule/${scheduleId}`);
+            const res = await fetch(`/api/schedule/${scheduleId}`);
             const data = await res.json();
 
             let ms;

@@ -58,14 +58,14 @@ def static_proxy(path):
     else:
         return send_from_directory(app.template_folder, 'index.html')
 
-
-# @app.route('/')
-# def index():
+#
+# @app.route('/test')
+# def index_test():
 #     """Root endpoint to check if the application is running."""
 #     return 'Hello, Flask!'
 
 
-@app.route("/signup", methods=["POST", "OPTIONS"])
+@app.route("/api/signup", methods=["POST", "OPTIONS"])
 def signup():
     """
     Handle user signup.
@@ -103,7 +103,7 @@ def signup():
     return jsonify({"success": True, "token": token})
 
 
-@app.route("/login", methods=["POST", "OPTIONS"])
+@app.route("/api/login", methods=["POST", "OPTIONS"])
 def login():
     """
     Handle user login.
@@ -660,6 +660,7 @@ Return only a valid JSON array like:
     })
 
 
+
 if __name__ == '__main__':
-    app.run(port=5001,debug=True)
-    # app.run(host='0.0.0.0', port=5001)
+    port = int(os.environ.get('PORT', 5001))
+    app.run(host='0.0.0.0', port=port)

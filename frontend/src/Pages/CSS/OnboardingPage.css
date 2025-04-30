@@ -200,7 +200,7 @@ select.glass-box {
   
   .view-form-box {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     align-items: center;
     margin-left: 60px;
   }
@@ -297,8 +297,12 @@ select.glass-box {
   .fade-in {
     animation: fadeIn 1s ease-in-out forwards;
   }
+
+  
   
   @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
   }
+
+  
