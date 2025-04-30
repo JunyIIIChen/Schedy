@@ -14,7 +14,7 @@ export const LinkGenerator = ({ onScheduleGenerated }) => {
     }
 
     try {
-      const res = await fetch("${API_BASE_URL}/api/schedule", {
+      const res = await fetch(`${API_BASE_URL}/api/schedule`, {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${token}`,
