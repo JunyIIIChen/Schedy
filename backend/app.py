@@ -59,10 +59,10 @@ def static_proxy(path):
         return send_from_directory(app.template_folder, 'index.html')
 
 
-# @app.route('/')
-# def index():
-#     """Root endpoint to check if the application is running."""
-#     return 'Hello, Flask!'
+@app.route('/test')
+def index():
+    """Root endpoint to check if the application is running."""
+    return 'Hello, Flask!'
 
 
 @app.route("/signup", methods=["POST", "OPTIONS"])
