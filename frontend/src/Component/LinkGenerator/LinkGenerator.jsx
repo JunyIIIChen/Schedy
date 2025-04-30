@@ -40,7 +40,7 @@ export const LinkGenerator = ({ onScheduleGenerated }) => {
   return (
     <div>
       <button className="gradient-button" onClick={handleGenerateLink}>
-      Generate New Link→
+      Generate
       </button>
     </div>
   );

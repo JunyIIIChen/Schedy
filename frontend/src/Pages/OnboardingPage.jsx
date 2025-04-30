@@ -232,10 +232,11 @@ const OnboardingPage = () => {
             </>
           )}
 
-          {/* 🎯 Step 3 */}
           {step === 3 && (
             <>
               <h2 className="onboarding-title">Welcome onboard!</h2>
+
+              {/* 第1段：提示 + View Form */}
               <div className="lottie-row">
                 <Lottie className="lottie-avatar" animationData={animationData} loop={true} />
                 <div className="glass-box">
@@ -247,23 +248,28 @@ const OnboardingPage = () => {
                   </div>
                 </div>
               </div>
-              <div className="glass-box view-form-box">
-                <span>Work Availability Form</span>
-              </div>
+
+              {/* 第2段：Generate 按钮与说明 */}
               <div className="lottie-row">
                 <Lottie className="lottie-avatar" animationData={animationData} loop={true} />
                 <div className="glass-box">
-                  Click &nbsp;<div style={{ color: "#007AFF" }}> Generate </div> &nbsp; button to generate the form link, and send it to your employees.
-                  <div className="generate-button-wrapper">
+                  <span>
+                    Click <span style={{ color: "#007AFF" }}>Generate</span> to create the form link and send it to your employees.
+                  </span>
+                  <div>
                     <LinkGenerator onScheduleGenerated={setScheduleId} />
                   </div>
                 </div>
               </div>
-              {scheduleId && (
-                <div className="glass-box generated-link-box">
-                  <div className="link-content">
-                    <div>
-                      <p>Share this link with your employees:</p>
+
+              {/* 第3段：展示链接和复制按钮（整合） */}
+              <div className="glass-box view-form-box">
+                {!scheduleId ? (
+                  <p className="generate-hint">Click Generate button to generate the form link.</p>
+                ) : (
+                  <>
+                    <p className="generated-link"></p>
+                    <div className="link-content">
                       <a
                         href={`${window.location.origin}/availability?sid=${scheduleId}`}
                         target="_blank"
@@ -271,20 +277,23 @@ const OnboardingPage = () => {
                       >
                         {`${window.location.origin}/availability?sid=${scheduleId}`}
                       </a>
+                      <button className="copy-button" onClick={handleCopyLink}>
+                        <Copy size={20} />
+                      </button>
                     </div>
-                    <button className="copy-button" onClick={handleCopyLink}>
-                      <Copy size={20} />
-                    </button>
-                  </div>
-                  {copySuccess && <p className="copy-success">Copied!</p>}
-                </div>
-              )}
+                    {copySuccess && <p className="copy-success">Copied!</p>}
+                  </>
+                )}
+              </div>
+
+              {/* 按钮区域 */}
               <div className="button-row">
                 <button className="back-button" onClick={() => setStep(2)}>← Back</button>
                 <button className="next-button" onClick={() => setStep(4)}>Next →</button>
               </div>
             </>
           )}
+
 
           {/* 🎯 Step 4 */}
           {step === 4 && (

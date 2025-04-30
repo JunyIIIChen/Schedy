@@ -39,6 +39,8 @@
   
   .glass-box {
     display: flex;
+    justify-content: space-between;
+    align-items: center;
     width: 912px;
     padding: 16px 20px;
     margin-bottom: 16px;
@@ -210,6 +212,13 @@ select.glass-box {
     color: #446fff;
     cursor: pointer;
   }
+  .generate-hint {
+    font-size: 14px;
+    color: #888; /* 灰色文字 */
+    pointer-events: none; /* 禁止鼠标事件 */
+    user-select: none;     /* 禁止选中文本 */
+    
+  }
   
   .form-link-box {
     display: flex;
@@ -221,7 +230,7 @@ select.glass-box {
   }
   
   .generate-button-wrapper {
-    margin-left: 110px;
+    margin-left: 0px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -233,6 +242,7 @@ select.glass-box {
 
   .generated-link-box {
     display: flex;
+
     flex-direction: column;
     gap: 8px;
     padding: 20px;
@@ -244,6 +254,7 @@ select.glass-box {
     justify-content: space-between;
     align-items: center;
     word-break: break-all;
+    margin-bottom: 0px;
   }
   
   .copy-button {

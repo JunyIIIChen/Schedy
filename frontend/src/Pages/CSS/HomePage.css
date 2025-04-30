@@ -109,7 +109,9 @@
 }
 
 /* 生成按钮区域 */
-.generate-button-wrapper-home {
+.generate-button-wrapper-home 
+{
+    
     margin-left: auto;
 }
 .generate-button{

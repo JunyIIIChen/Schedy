@@ -39,15 +39,30 @@ export const HomePage = () => {
     };
 
     useEffect(() => {
-        const scheduleId = localStorage.getItem('schedule-id');
-        if (scheduleId) {
-            const link = `${window.location.origin}/availability?sid=${scheduleId}`;
-            setGeneratedLink(link);
-
-            fetchScheduleTime(scheduleId);
-            fetchAvailabilityCount(scheduleId);
-        }
-    }, []);
+        const token = localStorage.getItem('auth-token');
+        if (!token) return;
+      
+        fetch("http://localhost:5001/api/latest-schedule", {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+          },
+        })
+          .then(res => res.json())
+          .then(data => {
+            if (data.schedule_id) {
+              const link = `${window.location.origin}/availability?sid=${data.schedule_id}`;
+              setGeneratedLink(link);
+              fetchScheduleTime(data.schedule_id);
+              fetchAvailabilityCount(data.schedule_id);
+      
+              // 保存到本地方便后续操作（可选）
+              localStorage.setItem("schedule-id", data.schedule_id);
+            }
+          })
+          .catch(err => {
+            console.error("Error fetching latest schedule:", err);
+          });
+      }, []);
 
     const fetchAvailabilityCount = async (scheduleId) => {
         try {

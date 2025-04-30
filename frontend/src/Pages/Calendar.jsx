@@ -275,7 +275,11 @@ const EventCalendar = () => {
             }}>
               {event.employee}
               <br/>
-              {moment(event.start).format('HH:mm')} - {moment(event.end).format('HH:mm')}
+              {moment(event.start).format('HH:mm')}
+              <br />
+              -
+              <br />
+              {moment(event.end).format('HH:mm')}
             </div>
           )
         }}
