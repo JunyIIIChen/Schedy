@@ -37,7 +37,7 @@ const EventCalendar = () => {
     }
 
     try {
-      const res = await fetch("http://localhost:5001/api/basic", {
+      const res = await fetch("/api/basic", {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${token}`,
@@ -165,7 +165,7 @@ const EventCalendar = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:5001/api/update_user", {
+      const response = await fetch("/api/update_user", {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${token}`,
@@ -198,7 +198,7 @@ const EventCalendar = () => {
 
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:5001/api/view-calendar', {
+      const res = await fetch('/api/view-calendar', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
