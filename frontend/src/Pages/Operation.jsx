@@ -6,7 +6,6 @@ export const Operation = () => {
   const [error, setError] = useState("");
   const [userData, setUserData] = useState(null);
   const [rows, setRows] = useState([]);
-  const API_BASE_URL = window.location.origin;
 
   useEffect(() => {
     const load_user_information = async () => {
@@ -17,7 +16,7 @@ export const Operation = () => {
       }
 
       try {
-        const res = await fetch("${API_BASE_URL}/api/basic", {
+        const res = await fetch("/api/basic", {
           method: "POST",
           headers: {
             "Authorization": `Bearer ${token}`,
@@ -105,7 +104,7 @@ export const Operation = () => {
 
       const newWorkerConfig = convertRowsToWorkerConfig(rows);
 
-      const response = await fetch("${API_BASE_URL}/api/update_user", {
+      const response = await fetch("/api/update_user", {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${token}`,

@@ -14,7 +14,6 @@ export const HomePage = () => {
     const [availabilityCount, setAvailabilityCount] = useState(0);
     const [copySuccess, setCopySuccess] = useState(false);
     const qrRef = useRef(null);
-    const API_BASE_URL = window.location.origin;
 
     const handleDownload = () => {
         const svg = qrRef.current.querySelector('svg');
@@ -52,7 +51,7 @@ export const HomePage = () => {
 
     const fetchAvailabilityCount = async (scheduleId) => {
         try {
-            const res = await fetch(`${API_BASE_URL}/api/availability-count/${scheduleId}`);
+            const res = await fetch(`/api/availability-count/${scheduleId}`);
             const data = await res.json();
             if (data.count !== undefined) {
                 setAvailabilityCount(data.count);
@@ -64,7 +63,7 @@ export const HomePage = () => {
 
     const fetchScheduleTime = async (scheduleId) => {
         try {
-            const res = await fetch(`${API_BASE_URL}/api/schedule/${scheduleId}`);
+            const res = await fetch(`/api/schedule/${scheduleId}`);
             const data = await res.json();
 
             let ms;
@@ -159,7 +158,7 @@ export const HomePage = () => {
                             <div className='generate-button'>
                             <LinkGenerator onScheduleGenerated={handleScheduleGenerated} />
                             </div>
-                            
+
                         </div>
 
                         {generatedTime && (
@@ -168,7 +167,7 @@ export const HomePage = () => {
                     </div>
 
                     <div className="sidebar-section bottom-section">
-                        
+
                     {availabilityCount >= 0 && (
                         <div className="availability-info">
                             <div className="availability-line">

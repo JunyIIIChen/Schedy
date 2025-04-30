@@ -15,7 +15,6 @@ const OnboardingPage = () => {
   const [industry, setIndustry] = useState('');
   const [copySuccess, setCopySuccess] = useState(false);
   const [saving, setSaving] = useState(false);
-  const API_BASE_URL = window.location.origin;
 
   const [workerConfig, setWorkerConfig] = useState({
     monday: { start: "08:00", end: "19:00", workers: 3, dayOff: false },
@@ -60,7 +59,7 @@ const OnboardingPage = () => {
         return;
       }
 
-      const basicRes = await fetch('http://localhost:5001/api/basic', {
+      const basicRes = await fetch('/api/basic', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -77,7 +76,7 @@ const OnboardingPage = () => {
 
       const userId = basicData._id.$oid;
 
-      const updateRes = await fetch('http://localhost:5001/api/update_user', {
+      const updateRes = await fetch('/api/update_user', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
