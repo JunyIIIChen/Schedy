@@ -1,28 +1,28 @@
 .ai-chat-wrapper {
-  width: 846px;
-  height: 784px;  /* background: linear-gradient(180deg, #f8faff 0%, #e8f0ff 100%); */
+  flex: 1; /* ✅ 替代固定高度 */
+  width: 100%;
+  max-width: 846px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  /*padding: 40px 20px;*/
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   border-radius: 12px;
-
-  /* 删掉flex:1 不要撑爆 */
+  min-height: 0; /* 避免 overflow */
+  overflow: hidden;
+  background: white;
 }
 
-/* 聊天区域 */
+/* 聊天区域撑满中间高度 */
 .ai-chat-messages {
-  flex: 1;
-  margin: 40px 25px 0px 25px;
+  flex: 1; /* ✅ 核心，让消息区占满剩余空间 */
   width: 100%;
   max-width: 800px;
-  padding-top: 10px; /* 👈 从40px减小到10px */
+  padding: 50px 25px 0px 25px;
   display: flex;
   flex-direction: column;
   gap: 20px;
   overflow-y: auto;
-  max-height: calc(100vh - 200px); /* 保证不会太高，200px是顶部和输入区大概占的空间 */
+  min-height: 0;
 }
 
 /* 单条消息 */
@@ -33,7 +33,7 @@
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border-radius: 16px;
-  padding: 10px 10px;
+  padding: 10px;
   margin: 0 25px;
   box-shadow: 0px 8px 30px rgba(99, 140, 243, 0.2);
 }
@@ -42,7 +42,6 @@
 .avatar-wrapper {
   width: 48px;
   height: 48px;
-  /* background: radial-gradient(circle at center, #c7d2fe 0%, #e0e7ff 60%, transparent 80%); */
   border-radius: 50%;
   margin-right: 16px;
   display: flex;
@@ -69,15 +68,15 @@
 .ai-chat-input-area {
   display: flex;
   align-items: center;
-  width: 90%;
+  width: 85%;
   max-width: 730px;
   background: rgba(255, 255, 255, 0.7);
   border-radius: 24px;
   padding: 8px 16px;
+  margin-top: 12px;
   box-shadow: 0px 8px 30px rgba(99, 140, 243, 0.2);
-  margin-top: 12px; /* 👈 原来是24px，减半了 */
+  margin-bottom: 10px;
 }
-
 
 .ai-chat-input {
   flex: 1;
@@ -90,7 +89,7 @@
   font-family: 'Montserrat', sans-serif;
 }
 
-/* 飞机按钮基础样式 */
+/* 飞机按钮 */
 .send-button {
   background: linear-gradient(90deg, #0ACFFE, #495AFF);
   border: none;
@@ -105,55 +104,23 @@
   transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
-
-/* View Calendar按钮 */
-.view-calendar-button {
-  all: unset; /* 去除所有默认按钮样式 */
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    margin: 24px 44px;
-    height: 36px;
-    padding: 0 30px;
-    border-radius: 12px;
-    background: linear-gradient(270deg, #0ACFFE, #495AFF, #0ACFFE);
-    background-size: 600% 600%;
-    color: white;
-    font-weight: 600;
-    font-size: 14px;
-    font-family: 'Montserrat', sans-serif;
-    cursor: pointer;
-    transition: all 0.4s ease;
-    align-self: flex-end;
-    margin-left: auto;
-
-}
-.view-calendar-button:hover {
-  animation: gradientMove 3s ease infinite;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
-}
-/* 公共基础按钮样式 */
+/* 右下角按钮 */
 .ai-finish-button {
   all: unset;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  margin: 24px 44px;
+  margin: 10px 44px 20px auto;
   height: 40px;
   padding: 0 24px;
   border-radius: 12px;
   font-weight: 500;
   font-size: 15px;
   line-height: 100%;
-  letter-spacing: 0%;
   text-align: center;
   cursor: pointer;
   transition: all 0.3s ease;
-  align-self: flex-end;
-  margin-left: auto;
 }
 
 /* AI Generate 状态（白底蓝边） */
@@ -170,13 +137,11 @@
   border: none;
 }
 
-/* 鼠标悬停效果 */
 .ai-finish-button:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 
-/* AI小图标 */
 .ai_icon_yellow {
   width: 20px;
   height: 20px;
