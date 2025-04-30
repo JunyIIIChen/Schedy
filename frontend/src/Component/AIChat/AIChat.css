@@ -1,7 +1,6 @@
 .ai-chat-wrapper {
-  flex: 1; /* ✅ 替代固定高度 */
-  width: 100%;
-  max-width: 846px;
+  width: 846px;
+  height: 784px;
   display: flex;
   flex-direction: column;
   align-items: center;

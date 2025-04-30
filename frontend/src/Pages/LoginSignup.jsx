@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import "./CSS/LoginSignup.css";
 import signin1 from "../Component/Assets/signin1.png";
 // import signin2 from "../Component/Assets/signin2.png";
-const API_BASE_URL = window.location.origin;
 
 const LoginSignup = () => {
 
@@ -14,9 +13,8 @@ const LoginSignup = () => {
     }
 
   const login = async () => {
-    console.log(API_BASE_URL)
     let dataObj;
-    await fetch('${API_BASE_URL}/login', {
+    await fetch('http://localhost:5001/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -38,7 +36,7 @@ const LoginSignup = () => {
 
   const signup = async () => {
     let dataObj;
-    await fetch('${API_BASE_URL}/signup', {
+    await fetch('http://localhost:5001/signup', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

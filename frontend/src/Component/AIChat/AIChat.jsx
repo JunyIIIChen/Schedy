@@ -146,8 +146,8 @@ export const AIChat = () => {
 
             {showSentMessage && (
                 <div className="instruction-message" style={{color: '#007BFF'}}>
-                  Once finished filling your additional<br/>
-                  requirements, you may input <strong>‘start scheduling’</strong><br/> to check current schedule
+                  Once finished filling your additional requirements, you
+                   <br/>may input <strong>‘start scheduling’</strong> to check current schedule
                 </div>
             )}
 
