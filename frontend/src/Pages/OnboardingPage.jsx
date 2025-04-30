@@ -7,6 +7,7 @@ import { LinkGenerator } from '../Component/LinkGenerator/LinkGenerator';
 import { Copy } from 'lucide-react';
 import onboardingAnimation from '../Component/Assets/onboarding_animation_1.json';
 import onboardingAnimation2 from '../Component/Assets/onboarding_animation_2.json';
+import { Color } from 'antd/es/color-picker';
 
 const OnboardingPage = () => {
   const [scheduleId, setScheduleId] = useState('');
@@ -167,7 +168,11 @@ const OnboardingPage = () => {
                     <option value="" disabled>What industry best describes your business?</option>
                     <option value="Retail">Retail</option>
                     <option value="Hotel">Hotel</option>
+                    <option value="Technology">Technology</option>
                     <option value="Restaurant">Restaurant</option>
+                    <option value="Healthcare">Healthcare</option>
+                    <option value="Education">Education</option>
+                    <option value="Automotive">Automotive</option>
                   </select>
                 </div>
               </div>
@@ -233,17 +238,22 @@ const OnboardingPage = () => {
               <h2 className="onboarding-title">Welcome onboard!</h2>
               <div className="lottie-row">
                 <Lottie className="lottie-avatar" animationData={animationData} loop={true} />
-                <div className="glass-box">We have generated a form collecting availability information from employees.<button className="view-form-button">View Form</button></div>
-                
+                <div className="glass-box">
+                  <div className="form-text-row">
+                    We've created a form to gather employee availability from employees.
+                    <div className="view-form-button-wrapper">
+                      <button className="view-form-button">View Form</button>
+                    </div>
+                  </div>
+                </div>
               </div>
               <div className="glass-box view-form-box">
                 <span>Work Availability Form</span>
-                
               </div>
               <div className="lottie-row">
                 <Lottie className="lottie-avatar" animationData={animationData} loop={true} />
                 <div className="glass-box">
-                  Click Generate Button to generate the form link, and send it to your employees.
+                  Click &nbsp;<div style={{ color: "#007AFF" }}> Generate </div> &nbsp; button to generate the form link, and send it to your employees.
                   <div className="generate-button-wrapper">
                     <LinkGenerator onScheduleGenerated={setScheduleId} />
                   </div>
