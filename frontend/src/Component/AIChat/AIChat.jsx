@@ -20,10 +20,6 @@ export const AIChat = () => {
     const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5001';
     const [showSentMessage, setShowSentMessage] = useState(false);
 
-    useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({behavior: 'smooth'});
-    }, [messages]);
-
     const sendMessage = async () => {
         if (loading || !input.trim()) return;  // 防止发送中重复触发
 
