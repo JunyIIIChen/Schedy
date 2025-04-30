@@ -42,7 +42,7 @@ export const HomePage = () => {
         const token = localStorage.getItem('auth-token');
         if (!token) return;
       
-        fetch("http://localhost:5001/api/latest-schedule", {
+        fetch("/api/latest-schedule", {
           headers: {
             "Authorization": `Bearer ${token}`,
           },
