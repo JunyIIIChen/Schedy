@@ -42,7 +42,7 @@ const OnboardingPage = () => {
   };
 
   const handleCopyLink = () => {
-    const link = `/availability?sid=${scheduleId}`;
+    const link = `${window.location.origin}/availability?sid=${scheduleId}`;
     navigator.clipboard.writeText(link).then(() => {
       setCopySuccess(true);
       setTimeout(() => setCopySuccess(false), 2000);
