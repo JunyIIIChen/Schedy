@@ -14,7 +14,7 @@ export const HomePage = () => {
     const [availabilityCount, setAvailabilityCount] = useState(0);
     const [copySuccess, setCopySuccess] = useState(false);
     const qrRef = useRef(null);
-    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5001';
+    const API_BASE_URL = window.location.origin;
 
     const handleDownload = () => {
         const svg = qrRef.current.querySelector('svg');
