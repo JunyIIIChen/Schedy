@@ -232,59 +232,71 @@ const OnboardingPage = () => {
             </>
           )}
 
-          {/* 🎯 Step 3 */}
-          {step === 3 && (
-            <>
-              <h2 className="onboarding-title">Welcome onboard!</h2>
-              <div className="lottie-row">
-                <Lottie className="lottie-avatar" animationData={animationData} loop={true} />
-                <div className="glass-box">
-                  <div className="form-text-row">
-                    We've created a form to gather employee availability from employees.
-                    <div className="view-form-button-wrapper">
-                      <button className="view-form-button">View Form</button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="glass-box view-form-box">
-                <span>Work Availability Form</span>
-              </div>
-              <div className="lottie-row">
-                <Lottie className="lottie-avatar" animationData={animationData} loop={true} />
-                <div className="glass-box">
-                  Click &nbsp;<div style={{ color: "#007AFF" }}> Generate </div> &nbsp; button to generate the form link, and send it to your employees.
-                  <div className="generate-button-wrapper">
-                    <LinkGenerator onScheduleGenerated={setScheduleId} />
-                  </div>
-                </div>
-              </div>
-              {scheduleId && (
-                <div className="glass-box generated-link-box">
-                  <div className="link-content">
-                    <div>
-                      <p>Share this link with your employees:</p>
-                      <a
-                        href={`${window.location.origin}/availability?sid=${scheduleId}`}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        {`${window.location.origin}/availability?sid=${scheduleId}`}
-                      </a>
-                    </div>
-                    <button className="copy-button" onClick={handleCopyLink}>
-                      <Copy size={20} />
-                    </button>
-                  </div>
-                  {copySuccess && <p className="copy-success">Copied!</p>}
-                </div>
-              )}
-              <div className="button-row">
-                <button className="back-button" onClick={() => setStep(2)}>← Back</button>
-                <button className="next-button" onClick={() => setStep(4)}>Next →</button>
-              </div>
-            </>
-          )}
+{/* 🎯 Step 3 */}
+{step === 3 && (
+  <>
+    <h2 className="onboarding-title">Welcome onboard!</h2>
+    <div className="lottie-row">
+      <Lottie className="lottie-avatar" animationData={animationData} loop />
+      <div className="glass-box">
+        <div className="form-text-row">
+          We've created a form to gather employee availability from employees.
+          <div className="view-form-button-wrapper">
+            <button className="view-form-button">View Form</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div className="lottie-row">
+      <Lottie className="lottie-avatar" animationData={animationData} loop />
+      <div className="glass-box">
+        Click <span style={{ color: '#007AFF' }}>Generate</span> to create the form link and share it with your employees.
+      </div>
+    </div>
+
+    <div className="glass-box view-form-box">
+      <div className="generate-button-wrapper">
+        {!scheduleId ? (
+          <LinkGenerator onScheduleGenerated={setScheduleId} />
+        ) : (
+          <div
+            className="link-display"
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              gap: '8px',
+              flexWrap: 'wrap',
+            }}
+          >
+            <a
+              href={`${window.location.origin}/availability?sid=${scheduleId}`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {`${window.location.origin}/availability?sid=${scheduleId}`}
+            </a>
+            <button className="copy-button" onClick={handleCopyLink}>
+              <Copy size={20} />
+            </button>
+            {copySuccess && <span className="copy-success">Copied!</span>}
+          </div>
+        )}
+      </div>
+    </div>
+
+    <div className="button-row">
+      <button className="back-button" onClick={() => setStep(2)}>
+        ← Back
+      </button>
+      <button className="next-button" onClick={() => setStep(4)}>
+        Next →
+      </button>
+    </div>
+  </>
+)}
+
 
           {/* 🎯 Step 4 */}
           {step === 4 && (
