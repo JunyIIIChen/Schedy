@@ -1,7 +1,7 @@
 import React from 'react'
 import './CSS/LandingPage.css'
 import {Link} from 'react-router-dom'
-import {LinkGenerator} from '../Component/LinkGenerator/LinkGenerator'
+import './CSS/LandingPage.responsive.css'; // 
 
 import arrow_icon from '../Component/Assets/arrow.png'
 import frame8 from '../Component/Assets/Frame8.png'

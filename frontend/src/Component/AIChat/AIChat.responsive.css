@@ -1,0 +1,52 @@
+/* 默认宽度下维持原样（桌面优先设计） */
+
+/* 📱 平板及更小屏幕（≤1024px） */
+@media screen and (max-width: 1024px) {
+    .ai-chat-wrapper {
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+      padding: 20px;
+      border-radius: 0;
+    }
+  
+    .ai-chat-messages {
+      max-height: 60vh;
+      padding: 10px 15px;
+    }
+  
+    .ai-chat-input-area {
+      flex-direction: column;
+      gap: 8px;
+    }
+  
+    .ai-chat-input {
+      width: 100%;
+      font-size: 14px;
+    }
+  
+    .send-button {
+      align-self: flex-end;
+      padding: 8px 16px;
+    }
+  }
+  
+  /* 📱 手机尺寸（≤600px） */
+  @media screen and (max-width: 600px) {
+    .ai-chat-wrapper {
+      padding: 12px;
+    }
+  
+    .ai-chat-messages {
+      max-height: 50vh;
+    }
+  
+    .ai-chat-input {
+      font-size: 13px;
+    }
+  
+    .send-button {
+      font-size: 14px;
+    }
+  }
+  

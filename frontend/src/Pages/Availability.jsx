@@ -4,6 +4,7 @@ import { useSearchParams } from "react-router-dom";
 import Lottie from "lottie-react";
 import checkAnimation from "../Component/Assets/Check.json";
 
+
 function Availability() {
   const [searchParams] = useSearchParams();
   const scheduleId = searchParams.get("sid");

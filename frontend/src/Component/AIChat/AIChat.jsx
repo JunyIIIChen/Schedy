@@ -7,6 +7,7 @@ import './AIChat.css';
 import {useNavigate} from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import ai_icon_yellow from "../Assets/yellowai.png";
+import './AIChat.responsive.css';
 
 export const AIChat = () => {
     const [messages, setMessages] = useState([

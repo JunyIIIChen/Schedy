@@ -1,0 +1,74 @@
+/* 💻 桌面设备默认保持现有样式 */
+
+/* 📱 平板及更小屏幕调整 */
+@media screen and (max-width: 1024px) {
+    .ai-chat-container {
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    .left-sidebar {
+      width: 100%;
+      max-width: 100%;
+      flex: unset;
+    }
+  
+    .sidebar-section {
+      width: 90%;
+      padding: 16px;
+    }
+  
+    .top-section,
+    .bottom-section {
+      height: auto; /* 自动高度以适应内容 */
+    }
+  
+    .link-section {
+      width: 100%;
+    }
+  
+    .link-button {
+      height: auto;
+    }
+  
+    .link-content {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+  
+    .generate-button-wrapper-home {
+      margin: 0 auto;
+      text-align: center;
+    }
+  
+    .generate-button {
+      margin: 0 auto;
+    }
+  }
+  
+  /* 📱 手机尺寸下进一步优化 */
+  @media screen and (max-width: 600px) {
+    .link-section {
+      padding: 12px;
+    }
+  
+    .generated-time {
+      font-size: 11px;
+    }
+  
+    .availability-text,
+    .availability-subtext {
+      font-size: 12px;
+    }
+  
+    .QRCodeSVG {
+      width: 200px !important;
+      height: 200px !important;
+    }
+  
+    .download-button span {
+      font-size: 13px;
+    }
+  }
+  

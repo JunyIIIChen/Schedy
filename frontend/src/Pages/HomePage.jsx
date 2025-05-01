@@ -7,6 +7,7 @@ import './CSS/HomePage.css';
 import { QRCodeSVG } from 'qrcode.react';
 import dl_icon from "../Component/Assets/download.png";
 import alarm_icon from "../Component/Assets/alarm_icon.png";
+import './CSS/HomePage.responsive.css';
 
 export const HomePage = () => {
     const [generatedLink, setGeneratedLink] = useState('');
