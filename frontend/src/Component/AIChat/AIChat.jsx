@@ -39,7 +39,7 @@ export const AIChat = () => {
 
 
         try {
-            const res = await fetch('/api/schedule-agent', {
+            const res = await fetch('http://localhost:5001/api/schedule-agent', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
