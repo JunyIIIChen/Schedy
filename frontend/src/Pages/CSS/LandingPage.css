@@ -171,3 +171,98 @@ transform: rotate(15deg);
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
+
+
+/* ✅ Responsive styles for LandingPage — safely extend original layout */
+
+/* 📱 Mobile: ≤480px */
+@media (max-width: 480px) {
+  .LandingPage {
+    padding: 20px 16px;
+    gap: 32px;
+  }
+
+  .LandingPage h2 {
+    font-size: 28px;
+    line-height: 36px;
+    margin-bottom: 40px;
+    text-align: center;
+  }
+
+  .LandingPage p {
+    font-size: 14px;
+    line-height: 20px;
+    margin-bottom: 40px;
+    text-align: center;
+  }
+
+  .hero-image {
+    width: 100%;
+    height: auto;
+  }
+
+  .content-wrapper {
+    flex-direction: column;
+    width: 100%;
+    height: auto;
+    padding: 16px;
+  }
+
+  .left-section,
+  .right-section {
+    width: 100%;
+    height: auto;
+    margin: 0;
+    padding: 16px 0;
+    text-align: center;
+  }
+
+  .right-image {
+    height: 200px;
+  }
+
+  .LandingPage-latest-btn {
+    width: 100%;
+    height: 50px;
+    font-size: 14px;
+  }
+}
+
+/* 💻 Tablet: 481px–1023px */
+@media (min-width: 481px) and (max-width: 1023px) {
+  .LandingPage {
+    padding: 20px 48px;
+  }
+
+  .hero-image {
+    width: 100%;
+    height: auto;
+  }
+
+  .content-wrapper {
+    flex-direction: column;
+    width: 100%;
+    height: auto;
+    padding: 24px;
+  }
+
+  .left-section,
+  .right-section {
+    width: 100%;
+    height: auto;
+    margin: 0;
+    padding: 24px 0;
+    text-align: center;
+  }
+
+  .right-image {
+    height: 300px;
+  }
+
+  .LandingPage-latest-btn {
+    width: 240px;
+    height: 56px;
+  }
+}
+
+/* 🖥️ Large screen: ≥1024px — no change needed, use original styles */
